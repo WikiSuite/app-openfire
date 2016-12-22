@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'openfire';
-$app['version'] = '1.0.2';
+$app['version'] = '1.1.0';
 $app['release'] = '1';
 $app['vendor'] = 'Marc Laporte';
 $app['packager'] = 'eGloo';
