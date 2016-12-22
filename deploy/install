@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Set default start/boot
+#-----------------------
+
+logger -p local6.notice -t installer "app-openfire-core - enabling Openfire server"
+chkconfig openfire on >/dev/null 2>&1
+
+logger -p local6.notice -t installer "app-openfire-core - starting Openfire server"
+service openfire start >/dev/null 2>&1
