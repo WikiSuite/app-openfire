@@ -1,0 +1,88 @@
+#!/bin/sh
+
+# This script sets a bunch of Openfire properties so that we can skip the
+# install wizard.   When Openfire is initialized the first time, call this
+# script to set all the properties.  This also handles the case where the
+# end user changes the LDAP base DN.  When that happens, this script is
+# called with the "ldap" parameter.
+
+source $(dirname $0)/openfire-functions.sh
+
+# Bail if LDAP has not been initialized
+#--------------------------------------
+
+LDAP_CONFIG="/var/clearos/openldap/config.php"
+
+if [ ! -e "$LDAP_CONFIG" ]; then
+    logger -p local6.notice -t installer "app-openfire-core - skipping initialization, no LDAP yet"
+    exit 0
+fi
+
+BASE_DN=`grep "^base_dn =" $LDAP_CONFIG | awk '{ print $3 }'`
+BIND_DN=`grep "^bind_dn =" $LDAP_CONFIG | awk '{ print $3 }'`
+BIND_PW=`grep "^bind_pw =" $LDAP_CONFIG | awk '{ print $3 }'`
+
+# Bail if network has not been initialized
+#-----------------------------------------
+
+source /etc/clearos/network.conf
+
+if ( [ -z "$DEFAULT_DOMAIN" ] || [ -z "$INTERNET_HOSTNAME" ] ); then
+    logger -p local6.notice -t installer "app-openfire-core - skipping initialization, no hostname settings"
+fi
+
+# It is best to disable Openfire before setting properties
+#---------------------------------------------------------
+
+IS_RUNNING=`pidof -x openfire-start`
+if [ -n "$IS_RUNNING" ]; then
+    systemctl stop openfire
+fi
+
+# Set properties
+#----------------
+
+setProperty 'ldap.baseDN' "$BASE_DN"
+setProperty 'ldap.adminDN' 'FIXME'
+setProperty 'ldap.adminPassword' 'FIXME'
+setProperty 'ldap.searchFilter' "(memberof=cn=openfire_plugin,ou=Groups,ou=Accounts,$BASE_DN)"
+
+if [ "$1" != "ldap" ]; then
+    # FIXME move this to Webconfig GUI
+    setProperty 'admin.authorizedJIDs' 'test@clear7.lan'
+
+    setProperty 'xmpp.auth.anonymous' 'false'
+    setProperty 'xmpp.domain' "$DEFAULT_DOMAIN"
+    setProperty 'xmpp.fqdn' "$INTERNET_HOSTNAME"
+    setProperty 'xmpp.socket.ssl.active' 'true'
+    setProperty 'provider.auth.className' 'org.jivesoftware.openfire.ldap.LdapAuthProvider'
+    setProperty 'provider.group.className' 'org.jivesoftware.openfire.ldap.LdapGroupProvider'
+    setProperty 'provider.user.className' 'org.jivesoftware.openfire.ldap.LdapUserProvider'
+    setProperty 'provider.vcard.className' 'org.jivesoftware.openfire.ldap.LdapVCardProvider'
+    setProperty 'sasl.scram-sha-1.iteration-count' '4096'
+    setProperty 'ldap.autoFollowAliasReferrals' 'true'
+    setProperty 'ldap.autoFollowReferrals' 'false'
+    setProperty 'ldap.connectionPoolEnabled' 'true'
+    setProperty 'ldap.debugEnabled' 'false'
+    setProperty 'ldap.emailField' 'mail'
+    setProperty 'ldap.encloseDNs' 'true'
+    setProperty 'ldap.groupDescriptionField' 'description'
+    setProperty 'ldap.groupMemberField' 'member'
+    setProperty 'ldap.groupNameField' 'cn'
+    setProperty 'ldap.groupSearchFilter' '(objectClass=groupOfNames)'
+    setProperty 'ldap.host' '127.0.0.1'
+    setProperty 'ldap.ldapDebugEnabled' 'false'
+    setProperty 'ldap.nameField' 'cn'
+    setProperty 'ldap.override.avatar' 'false'
+    setProperty 'ldap.port' '389'
+    setProperty 'ldap.posixMode' 'false'
+    setProperty 'ldap.sslEnabled' 'false'
+    setProperty 'ldap.startTlsEnabled' 'false'
+    setProperty 'ldap.usernameField' 'uid'
+    setProperty 'ldap.vcard-mapping' '<![CDATA[\n<vCard xmlns=\"vcard-temp\">\n  <N>\n    <GIVEN>{cn}</GIVEN>\n  </N> \n  <EMAIL>\n    <INTERNET/> \n    <USERID>{mail}</USERID>\n  </EMAIL> \n  <FN>{cn}</FN> \n  <NICKNAME>{uid}</NICKNAME> \n  <PHOTO>\n    <TYPE>image/jpeg</TYPE> \n    <BINVAL>{jpegPhoto}</BINVAL>\n  </PHOTO> \n  <ADR>\n    <HOME/>\n  </ADR> \n  <ADR>\n    <WORK/> \n    <STREET>{street}</STREET> \n    <LOCALITY>{l}</LOCALITY> \n    <REGION>{st}</REGION> \n    <PCODE>{postalCode}</PCODE> \n    <CTRY>{c}</CTRY>\n  </ADR> \n  <TEL>\n    <WORK/> \n    <VOICE/> \n    <NUMBER>{telephoneNumber}</NUMBER>\n  </TEL> \n  <TEL>\n    <WORK/> \n    <CELL/> \n    <NUMBER>{mobile}</NUMBER>\n  </TEL> \n  <TEL>\n    <WORK/> \n    <FAX/> \n    <NUMBER>{facsimileTelephoneNumber}</NUMBER>\n  </TEL> \n  <TEL>\n    <WORK/> \n    <PAGER/> \n    <NUMBER>{pager}</NUMBER>\n  </TEL> \n  <TITLE>{title}</TITLE> \n  <ORG>\n    <ORGUNIT>{ou}</ORGUNIT>\n  </ORG>\n</vCard>]]>'
+fi
+
+IS_ENABLED=`systemctl is-enabled openfire | grep enabled`
+if [ -n "$IS_ENABLED" ]; then
+    systemctl start openfire
+fi
