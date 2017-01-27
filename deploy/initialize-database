@@ -1,0 +1,72 @@
+#!/bin/sh
+
+MYSQL="/usr/clearos/sandbox/usr/bin/mysql"
+MYSQLADMIN="/usr/clearos/sandbox/usr/bin/mysqladmin"
+
+DB_CONFIG="/var/clearos/system_database/root"
+APP_CONFIG="/usr/share/openfire/conf/openfire.xml"
+APP_DB_CONFIG="/var/clearos/system_database/openfire"
+APP_DB_NAME="openfire"
+APP_DB_USERNAME="openfire"
+
+# Start system database
+#----------------------
+
+/usr/clearos/apps/system_database/deploy/bootstrap
+
+# Grab root database password
+#----------------------------
+
+ROOTPASS=`grep ^password $DB_CONFIG 2>/dev/null | sed "s/^password[[:space:]]*=[[:space:]]*//"`
+
+if [ -z "$ROOTPASS" ]; then
+    echo "Unable to authenticate with database"
+    exit 1
+fi
+
+# Create databases (if necessary) 
+#--------------------------------
+
+$MYSQL -uroot -p"$ROOTPASS" -e 'status;' $APP_DB_NAME >/dev/null 2>&1
+
+if [ $? -ne 0 ]; then
+    echo "Creating $APP_DB_NAME database"
+    $MYSQLADMIN -uroot -p"$ROOTPASS" create $APP_DB_NAME >/dev/null 2>&1
+fi
+
+# Add/Update database password
+#-----------------------------
+
+APP_PASSWORD=`grep ^password $APP_DB_CONFIG 2>/dev/null | sed "s/^password[[:space:]]*=[[:space:]]*//"`
+
+if [ -z "$APP_PASSWORD" ]; then
+    echo "Generating password"
+    APP_PASSWORD=`openssl rand -base64 20`
+    touch $APP_DB_CONFIG
+    chmod 600 $APP_DB_CONFIG
+    echo "password = $APP_PASSWORD" >> $APP_DB_CONFIG
+fi
+
+APP_PASSWORD_SEDSAFE=`echo $APP_PASSWORD | sed 's/\//\\\\\//g'`
+
+echo "Updating privileges"
+$MYSQL -uroot -p"$ROOTPASS" -e "GRANT ALL PRIVILEGES ON $APP_DB_NAME.* TO $APP_DB_USERNAME@localhost IDENTIFIED BY \"$APP_PASSWORD\" WITH GRANT OPTION;" $APP_DB_NAME >/dev/null 2>&1
+
+# Update app configuration file
+#------------------------------
+
+if [ -e "$APP_CONFIG" ]; then
+    IS_RUNNING=`pidof -x openfire-start`
+    if [ -n "$IS_RUNNING" ]; then
+        systemctl stop openfire
+    fi
+
+    # FIXME: use API call instead.  This will overmatch at some point!
+    echo "Updating database password in Openfire configuration"
+    sed -i -e "s/^[[:space:]]*<password[[:space:]].*/      <password>$APP_PASSWORD<\/password>/" $APP_CONFIG
+
+    IS_ENABLED=`systemctl is-enabled openfire | grep enabled`
+    if [ -n "$IS_ENABLED" ]; then
+        systemctl start openfire
+    fi
+fi

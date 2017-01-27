@@ -1,5 +1,28 @@
 #!/bin/sh
 
+TIMESTAMP=`date "+%b-%d-%Y-%T"`
+
+# Initialize database
+#--------------------
+
+/usr/clearos/apps/openfire/deploy/initialize-database
+
+# Set default configuration
+#--------------------------
+
+if [ -e /usr/share/openfire/conf/openfire.xml ]; then
+    logger -p local6.notice -t installer "app-openfire-core - setting default configuration"
+    service openfire stop >/dev/null 2>&1
+    sleep 1
+
+    cp /usr/share/openfire/conf/openfire.xml /var/clearos/openfire/backup/openfire.xml.$TIMESTAMP
+    cp /usr/clearos/apps/openfire/deploy/openfire.xml /usr/share/openfire/conf/openfire.xml
+fi
+
+# FIXME: kludge for now -- this will update password in openfire.xml
+/usr/clearos/apps/openfire/deploy/initialize-database
+/usr/clearos/apps/openfire/deploy/set-properties
+
 # Set default start/boot
 #-----------------------
 
