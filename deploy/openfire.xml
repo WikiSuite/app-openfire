@@ -56,7 +56,7 @@
   <database> 
     <defaultProvider> 
       <driver>com.mysql.jdbc.Driver</driver>  
-      <serverURL>jdbc:mysql://127.0.0.1:3308/openfire?rewriteBatchedStatements=true</serverURL>  
+      <serverURL>jdbc:mysql://localhost:3308/openfire?rewriteBatchedStatements=true</serverURL>  
       <username>openfire</username>  
       <password>openfire_db_password</password>  
       <testSQL>select 1</testSQL>  
@@ -67,5 +67,44 @@
       <connectionTimeout>1.0</connectionTimeout> 
     </defaultProvider> 
   </database>  
+  <provider>  
+    <auth>
+      <className>org.jivesoftware.openfire.ldap.LdapAuthProvider</className>
+    </auth>
+    <group>
+      <className>org.jivesoftware.openfire.ldap.LdapGroupProvider</className>
+    </group>
+    <user>
+      <className>org.jivesoftware.openfire.ldap.LdapUserProvider</className>
+    </user>
+    <vcard>
+      <className>org.jivesoftware.openfire.ldap.LdapVCardProvider</className>
+    </vcard>
+  </provider>  
+  <ldap>
+    <baseDN>dc=clear7,dc=lan</baseDN>
+    <adminDN>cn=manager,ou=Internal,dc=clear7,dc=lan</adminDN>
+    <adminPassword>jFZ3/Hce3LA7lE77</adminPassword>
+    <autoFollowAliasReferrals>true</autoFollowAliasReferrals>
+    <autoFollowReferrals>false</autoFollowReferrals>
+    <connectionPoolEnabled>true</connectionPoolEnabled>
+    <debugEnabled>false</debugEnabled>
+    <emailField>mail</emailField>
+    <encloseDNs>true</encloseDNs>
+    <groupDescriptionField>description</groupDescriptionField>
+    <groupMemberField>member</groupMemberField>
+    <groupNameField>cn</groupNameField>
+    <groupSearchFilter>(objectClass=groupOfNames)</groupSearchFilter>
+    <host>127.0.0.1</host>
+    <ldapDebugEnabled>true</ldapDebugEnabled>
+    <nameField>cn</nameField>
+    <override.avatar>false</override.avatar>
+    <port>389</port>
+    <posixMode>false</posixMode>
+    <sslEnabled>false</sslEnabled>
+    <startTlsEnabled>false</startTlsEnabled>
+    <usernameField>uid</usernameField>
+    <vcard-mapping><![CDATA[\n<vCard xmlns=\"vcard-temp\">\n  <N>\n    <GIVEN>{cn}</GIVEN>\n  </N> \n  <EMAIL>\n    <INTERNET/> \n    <USERID>{mail}</USERID>\n  </EMAIL> \n  <FN>{cn}</FN> \n  <NICKNAME>{uid}</NICKNAME> \n  <PHOTO>\n    <TYPE>image/jpeg</TYPE> \n    <BINVAL>{jpegPhoto}</BINVAL>\n  </PHOTO> \n  <ADR>\n    <HOME/>\n  </ADR> \n  <ADR>\n    <WORK/> \n    <STREET>{street}</STREET> \n    <LOCALITY>{l}</LOCALITY> \n    <REGION>{st}</REGION> \n    <PCODE>{postalCode}</PCODE> \n    <CTRY>{c}</CTRY>\n  </ADR> \n  <TEL>\n    <WORK/> \n    <VOICE/> \n    <NUMBER>{telephoneNumber}</NUMBER>\n  </TEL> \n  <TEL>\n    <WORK/> \n    <CELL/> \n    <NUMBER>{mobile}</NUMBER>\n  </TEL> \n  <TEL>\n    <WORK/> \n    <FAX/> \n    <NUMBER>{facsimileTelephoneNumber}</NUMBER>\n  </TEL> \n  <TEL>\n    <WORK/> \n    <PAGER/> \n    <NUMBER>{pager}</NUMBER>\n  </TEL> \n  <TITLE>{title}</TITLE> \n  <ORG>\n    <ORGUNIT>{ou}</ORGUNIT>\n  </ORG>\n</vCard>]]></vcard-mapping>
+  </ldap>  
   <setup>true</setup> 
 </jive>

@@ -93,13 +93,32 @@ class Settings extends ClearOS_Controller
         // Load dependencies
         //------------------
 
+        $this->load->library('openfire/Openfire');
         $this->lang->load('openfire');
+
+        // Handle form submit
+        //-------------------
+
+        if ($this->input->post('admin')) {
+            try {
+                $this->openfire->set_admin($this->input->post('admin'));
+                $this->openfire->reset(TRUE);
+
+                $this->page->set_status_updated();
+            } catch (Exception $e) {
+                $this->page->view_exception($e);
+                return;
+            }
+        }
 
         // Load view data
         //---------------
 
         try {
+            $data['form_type'] = $form_type;
             $data['admin_url'] = 'https://' . $_SERVER['SERVER_ADDR'] . ':9091/';
+            $data['admins'] = $this->openfire->get_possible_admins();
+            $data['admin'] = $this->openfire->get_admin();
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

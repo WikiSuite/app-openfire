@@ -26,3 +26,13 @@ setProperty() {
     echo "Setting property - $PROPERTY: $VALUE"
     $MYSQL -u"$APP_DB_USERNAME" -p"$APP_DB_PASSWORD" -e"INSERT INTO ofProperty (name,propValue) VALUES ('$PROPERTY','$VALUE') ON DUPLICATE KEY UPDATE name = VALUES(name), propValue = VALUES(propValue);" $APP_DB_NAME
 }
+
+# setEncryptedProperty function
+#------------------------------
+
+setEncryptedProperty() {
+    PROPERTY=$1
+    VALUE=$2
+
+    echo "Setting encrypted property - $PROPERTY: $VALUE"
+}

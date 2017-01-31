@@ -22,10 +22,20 @@ $app['category'] = lang('base_category_server');
 $app['subcategory'] = lang('base_subcategory_communication_and_collaboration');
 
 /////////////////////////////////////////////////////////////////////////////
+// Controllers
+/////////////////////////////////////////////////////////////////////////////
+
+$app['controllers']['openfire']['title'] = $app['name'];
+$app['controllers']['settings']['title'] = lang('base_settings');
+$app['controllers']['policy']['title'] = lang('base_app_policy');
+
+/////////////////////////////////////////////////////////////////////////////
 // Packaging
 /////////////////////////////////////////////////////////////////////////////
 
 $app['core_requires'] = array(
+    'app-system-database-core >= 1:2.3.0',
+    'app-groups',
     'openfire',
 );
 

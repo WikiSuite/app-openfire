@@ -58,15 +58,22 @@ $MYSQL -uroot -p"$ROOTPASS" -e "GRANT ALL PRIVILEGES ON $APP_DB_NAME.* TO $APP_D
 if [ -e "$APP_CONFIG" ]; then
     IS_RUNNING=`pidof -x openfire-start`
     if [ -n "$IS_RUNNING" ]; then
+        echo "Stopping Openfire before updating database password"
         systemctl stop openfire
     fi
 
     # FIXME: use API call instead.  This will overmatch at some point!
     echo "Updating database password in Openfire configuration"
-    sed -i -e "s/^[[:space:]]*<password[[:space:]].*/      <password>$APP_PASSWORD<\/password>/" $APP_CONFIG
+    sed -i -e "s/^[[:space:]]*<password>.*/      <password>$APP_PASSWORD<\/password>/" $APP_CONFIG
+
+    if [ "$1" == "install" ]; then
+        echo "Skipping Openfire restart on install mode"
+        exit 0
+    fi
 
     IS_ENABLED=`systemctl is-enabled openfire | grep enabled`
     if [ -n "$IS_ENABLED" ]; then
+        echo "Restarting Openfire after database password change"
         systemctl start openfire
     fi
 fi

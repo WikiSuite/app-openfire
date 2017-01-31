@@ -51,6 +51,23 @@ echo infobox_warning(
 echo "</div>";
 
 ///////////////////////////////////////////////////////////////////////////////
+// Form handler
+///////////////////////////////////////////////////////////////////////////////
+
+if ($form_type === 'edit') {
+    $read_only = FALSE;
+    $buttons = array(
+        form_submit_update('submit'),
+        anchor_cancel('/app/openfire/settings'),
+    );
+} else {
+    $read_only = TRUE;
+    $buttons = array(
+        anchor_edit('/app/openfire/settings/edit')
+    );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Form - Running
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -65,5 +82,14 @@ echo infobox_highlight(
     lang('openfire_admin_console_help'),
     $options
 );
+
+echo form_open('openfire/settings');
+echo form_header(lang('base_settings'));
+
+echo field_dropdown('admin', $admins, $admin, lang('base_administrator'), $read_only);
+echo field_button_set($buttons);
+
+echo form_footer();
+echo form_close();
 
 echo "</div>";

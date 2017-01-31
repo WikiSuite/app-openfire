@@ -2,26 +2,34 @@
 
 TIMESTAMP=`date "+%b-%d-%Y-%T"`
 
-# Initialize database
-#--------------------
-
-/usr/clearos/apps/openfire/deploy/initialize-database
+# FIXME
+service openfire stop >/dev/null 2>&1
+sleep 1
 
 # Set default configuration
 #--------------------------
 
 if [ -e /usr/share/openfire/conf/openfire.xml ]; then
     logger -p local6.notice -t installer "app-openfire-core - setting default configuration"
-    service openfire stop >/dev/null 2>&1
-    sleep 1
-
     cp /usr/share/openfire/conf/openfire.xml /var/clearos/openfire/backup/openfire.xml.$TIMESTAMP
-    cp /usr/clearos/apps/openfire/deploy/openfire.xml /usr/share/openfire/conf/openfire.xml
 fi
 
-# FIXME: kludge for now -- this will update password in openfire.xml
-/usr/clearos/apps/openfire/deploy/initialize-database
-/usr/clearos/apps/openfire/deploy/set-properties
+#cp /usr/clearos/apps/openfire/deploy/openfire.xml /usr/share/openfire/conf/openfire.xml
+cp /home/peter/egloo/apps/openfire/deploy/openfire.xml /usr/share/openfire/conf/openfire.xml
+
+if [ -e /usr/share/openfire/conf/security.xml ]; then
+    logger -p local6.notice -t installer "app-openfire-core - setting default security configuration"
+    cp /usr/share/openfire/conf/security.xml /var/clearos/openfire/backup/security.xml.$TIMESTAMP
+fi
+
+#cp /usr/clearos/apps/openfire/deploy/openfire.xml /usr/share/openfire/conf/openfire.xml
+cp /home/peter/egloo/apps/openfire/deploy/security.xml /usr/share/openfire/conf/security.xml
+
+# Initialize database
+#--------------------
+
+#/usr/clearos/apps/openfire/deploy/initialize-database install
+/home/peter/egloo/apps/openfire/deploy/initialize-database install
 
 # Set default start/boot
 #-----------------------
@@ -31,3 +39,10 @@ chkconfig openfire on >/dev/null 2>&1
 
 logger -p local6.notice -t installer "app-openfire-core - starting Openfire server"
 service openfire start >/dev/null 2>&1
+
+# Set properties (must be after start)
+#-------------------------------------
+
+sleep 3
+#/usr/clearos/apps/openfire/deploy/set-properties install
+/home/peter/egloo/apps/openfire/deploy/set-properties install
