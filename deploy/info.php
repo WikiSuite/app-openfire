@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'openfire';
-$app['version'] = '1.1.1';
+$app['version'] = '1.1.2';
 $app['release'] = '1';
 $app['vendor'] = 'Marc Laporte';
 $app['packager'] = 'eGloo';
@@ -34,8 +34,10 @@ $app['controllers']['policy']['title'] = lang('base_app_policy');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['core_requires'] = array(
-    'app-system-database-core >= 1:2.3.0',
-    'app-groups',
+    'app-system-database-core >= 1:2.3.3',
+    'app-groups-core',
+    'app-network-core',
+    'app-ldap-core',
     'openfire',
 );
 
@@ -45,7 +47,11 @@ $app['core_directory_manifest'] = array(
 );
 
 $app['core_file_manifest'] = array(
-    'openfire.php'=> array('target' => '/var/clearos/base/daemon/openfire.php')
+    'openfire.php'=> array('target' => '/var/clearos/base/daemon/openfire.php'),
+    'openldap-configuration-event'=> array(
+        'target' => '/var/clearos/events/openldap_configuration/openfire',
+        'mode' => '0755'
+    ),
 );
 
 $app['delete_dependency'] = array(

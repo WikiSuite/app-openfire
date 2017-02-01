@@ -47,6 +47,7 @@ require_once $bootstrap . '/bootstrap.php';
 ///////////////////////////////////////////////////////////////////////////////
 
 clearos_load_language('openfire');
+clearos_load_language('network');
 
 ///////////////////////////////////////////////////////////////////////////////
 // D E P E N D E N C I E S
@@ -62,6 +63,7 @@ use \clearos\apps\groups\Group_Manager_Factory as Group_Manager_Factory;
 use \clearos\apps\ldap\LDAP_Factory as LDAP_Factory;
 use \clearos\apps\network\Domain as Domain;
 use \clearos\apps\network\Hostname as Hostname;
+use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\system_database\System_Database as System_Database;
 
 clearos_load_library('base/Daemon');
@@ -71,6 +73,7 @@ clearos_load_library('groups/Group_Manager_Factory');
 clearos_load_library('ldap/LDAP_Factory');
 clearos_load_library('network/Domain');
 clearos_load_library('network/Hostname');
+clearos_load_library('network/Network_Utils');
 clearos_load_library('system_database/System_Database');
 
 // Exceptions
@@ -105,6 +108,7 @@ class Openfire extends Daemon
     const DATABASE = 'openfire';
     const FILE_CONFIG = '/usr/share/openfire/conf/openfire.xml';
     const PROPERTY_ADMINS = 'admin.authorizedJIDs';
+    const PROPERTY_XMPP_DOMAIN = 'xmpp.domain';
 
     ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
@@ -140,6 +144,22 @@ class Openfire extends Daemon
     }
 
     /**
+     * Returns XMPP domain.
+     *
+     * @return string XMPP domain
+     * @throws Engine_Exception
+     */
+
+    public function get_xmpp_domain()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $domain = $this->_get_property(self::PROPERTY_XMPP_DOMAIN);
+
+        return $domain;
+    }
+
+    /**
      * Returns list of possible Openfire administrators.
      *
      * @return array list of possible Openfire administrators
@@ -152,9 +172,7 @@ class Openfire extends Daemon
 
         $manager = Group_Manager_Factory::create();
         $groups = $manager->get_details(Group_Engine::FILTER_ALL);
-
-        $ldap = LDAP_Factory::create();
-        $base_domain = $ldap->get_base_internet_domain(); // TODO: what is this base_domain AD mode?
+        $base_domain = $this->get_xmpp_domain();
 
         $list = [];
 
@@ -184,6 +202,58 @@ class Openfire extends Daemon
         $this->_set_property(self::PROPERTY_ADMINS, $username);
     }
 
+
+    /**
+     * Sets install defaults.
+     *
+     * On install, a few defaults are guessed based on existing ClearOS
+     * configuration.  For instance, we can use the default internet hostname
+     * to sett the XMPP domain.
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function set_install_defaults()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        // Update domain and hostname information
+        //---------------------------------------
+
+        $hostname = new Hostname();
+        $xmpp_fqdn = $hostname->get_internet_hostname();
+        $this->_set_property('xmpp.fqdn', $xmpp_fqdn);
+
+        $domain = new Domain();
+        $xmpp_domain = $domain->get_default();
+        $this->set_xmpp_domain($xmpp_domain);
+    }
+
+    /**
+     * Sets XMPP domain.
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function set_xmpp_domain($domain)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        Validation_Exception::is_valid($this->validate_xmpp_domain($domain));
+
+        $this->_set_property(self::PROPERTY_XMPP_DOMAIN, $domain);
+
+        // The admin ID needs the domain portion replace
+        $admin = $this->get_admin();
+
+        if (!empty($admin)) {
+            $new_admin = preg_replace('/@.*/', '@' . $domain, $admin);
+            $this->set_admin($new_admin);
+        }
+    }
+
     /**
      * Updates properties when underlying configuration changes.
      *
@@ -199,18 +269,6 @@ class Openfire extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        // Update domain and hostname information
-        //---------------------------------------
-
-        $domain = new Domain();
-        $xmpp_domain = $domain->get_default();
-
-        $hostname = new Hostname();
-        $xmpp_fqdn = $hostname->get_internet_hostname();
-
-        $this->_set_property('xmpp.domain', $xmpp_domain);
-        $this->_set_property('xmpp.fqdn', $xmpp_fqdn);
-
         // Update LDAP base DN and search filter
         //--------------------------------------
         // TODO: add Active Directory support for search_filter
@@ -221,16 +279,6 @@ class Openfire extends Daemon
 
         $this->_set_property('ldap.baseDN', $base_dn);
         $this->_set_property('ldap.searchFilter', $search_filter);
-
-        // Update domain used in username
-        //-------------------------------
-        // TODO: Active Directory probably does something different here
-
-        $base_domain = $ldap->get_base_internet_domain();
-        $admin = $this->get_admin();
-        $new_admin = preg_replace('/@.*/', '@' . $base_domain, $admin);
-
-        $this->set_admin($new_admin);
 
         // Update adminDN and adminPassword via openfire.xml
         //--------------------------------------------------
@@ -248,6 +296,22 @@ class Openfire extends Daemon
     ///////////////////////////////////////////////////////////////////////////////
     // V A L I D A T I O N  M E T H O D S 
     ///////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Validation routine for DNS server.
+     *
+     * @param string $ip IP address
+     *
+     * @return string error message if DNS server IP address is invalid
+     */
+
+    public function validate_xmpp_domain($domain)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (! Network_Utils::is_valid_domain($domain))
+            return lang('network_domain_invalid');
+    }
 
     /**
      * Validation routine for DNS server.
@@ -314,7 +378,10 @@ class Openfire extends Daemon
 
         $system_database = new System_Database();
 
-        $query = "UPDATE ofProperty SET propValue='$value' WHERE name='$property';";
+        $query = "INSERT INTO ofProperty (name,propValue) " .
+            "VALUES ('$property','$value') " .
+            "ON DUPLICATE KEY UPDATE name = VALUES(name), propValue = VALUES(propValue);";
+
         $system_database->run_update(self::DATABASE, $query);
     }
 

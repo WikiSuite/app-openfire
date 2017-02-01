@@ -87,6 +87,7 @@ echo form_open('openfire/settings');
 echo form_header(lang('base_settings'));
 
 echo field_dropdown('admin', $admins, $admin, lang('base_administrator'), $read_only);
+echo field_input('domain', $domain, lang('openfire_xmpp_domain'), $read_only);
 echo field_button_set($buttons);
 
 echo form_footer();

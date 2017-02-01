@@ -83,8 +83,6 @@
   </provider>  
   <ldap>
     <baseDN>dc=clear7,dc=lan</baseDN>
-    <adminDN>cn=manager,ou=Internal,dc=clear7,dc=lan</adminDN>
-    <adminPassword>jFZ3/Hce3LA7lE77</adminPassword>
     <autoFollowAliasReferrals>true</autoFollowAliasReferrals>
     <autoFollowReferrals>false</autoFollowReferrals>
     <connectionPoolEnabled>true</connectionPoolEnabled>

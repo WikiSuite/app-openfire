@@ -96,13 +96,21 @@ class Settings extends ClearOS_Controller
         $this->load->library('openfire/Openfire');
         $this->lang->load('openfire');
 
+        // Set validation rules
+        //---------------------
+
+        $this->form_validation->set_policy('admin', 'openfire/Openfire', 'validate_username');
+        $this->form_validation->set_policy('domain', 'openfire/Openfire', 'validate_xmpp_domain');
+        $form_ok = $this->form_validation->run();
+
         // Handle form submit
         //-------------------
 
-        if ($this->input->post('admin')) {
+        if ($this->input->post('submit') && $form_ok) {
             try {
                 $this->openfire->set_admin($this->input->post('admin'));
-                $this->openfire->reset(TRUE);
+                $this->openfire->set_xmpp_domain($this->input->post('domain'));
+                $this->openfire->reset(FALSE);
 
                 $this->page->set_status_updated();
             } catch (Exception $e) {
@@ -119,6 +127,7 @@ class Settings extends ClearOS_Controller
             $data['admin_url'] = 'https://' . $_SERVER['SERVER_ADDR'] . ':9091/';
             $data['admins'] = $this->openfire->get_possible_admins();
             $data['admin'] = $this->openfire->get_admin();
+            $data['domain'] = $this->openfire->get_xmpp_domain();
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

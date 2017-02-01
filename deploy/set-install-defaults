@@ -65,9 +65,9 @@ use \Exception as Exception;
 
 try {
     $openfire = new Openfire();
-	$openfire->update_properties();
+	$openfire->set_install_defaults();
 } catch (Exception $e) {
-	echo "exit_code:1:" . clearos_exception_message($e) . "\n";
+	echo clearos_exception_message($e) . "\n";
 }
 
 // vim: syntax=php ts=4
