@@ -98,7 +98,6 @@
     <host>127.0.0.1</host>
     <ldapDebugEnabled>true</ldapDebugEnabled>
     <nameField>cn</nameField>
-    <override.avatar>false</override.avatar>
     <port>389</port>
     <posixMode>false</posixMode>
     <sslEnabled>false</sslEnabled>

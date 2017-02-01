@@ -62,7 +62,7 @@ if [ -e "$APP_CONFIG" ]; then
         systemctl stop openfire
     fi
 
-    # FIXME: use API call instead.  This will overmatch at some point!
+    # TODO: use API call instead.  This will overmatch at some point!
     echo "Updating database password in Openfire configuration"
     sed -i -e "s/^[[:space:]]*<password>.*/      <password>$APP_PASSWORD<\/password>/" $APP_CONFIG
 
