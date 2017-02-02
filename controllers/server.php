@@ -64,4 +64,23 @@ class Server extends Daemon
     {
         parent::__construct('openfire', 'openfire');
     }
+
+    /**
+     * Start.
+     *
+     * @return view
+     */
+
+    function start()
+    {
+        $this->load->library('openfire/Openfire');
+
+        try {
+            $this->openfire->update_properties();
+            $this->openfire->set_running_state(TRUE);
+            $this->openfire->set_boot_state(TRUE);
+        } catch (Exception $e) {
+            // Keep going
+        }
+    }
 }
