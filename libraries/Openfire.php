@@ -107,6 +107,7 @@ class Openfire extends Daemon
 
     const DATABASE = 'openfire';
     const FILE_CONFIG = '/usr/share/openfire/conf/openfire.xml';
+    const FILE_SECURITY_CONFIG = '/usr/share/openfire/conf/security.xml';
     const PROPERTY_ADMINS = 'admin.authorizedJIDs';
     const PROPERTY_XMPP_DOMAIN = 'xmpp.domain';
 
@@ -275,6 +276,7 @@ class Openfire extends Daemon
 
         $ldap = LDAP_Factory::create();
         $base_dn = $ldap->get_base_dn();
+        $bind_pw = $ldap->get_bind_password();
         $search_filter = '(memberof=cn=openfire_plugin,ou=Groups,ou=Accounts,' . $base_dn . ')';
 
         $this->_set_property('ldap.baseDN', $base_dn);
@@ -284,8 +286,9 @@ class Openfire extends Daemon
         //--------------------------------------------------
         // TODO: more Active Directory changes required
 
+        $this->_reset_security_config();
         $this->_set_xml('adminDN', 'cn=manager,ou=Internal,' . $base_dn);
-        $this->_set_xml('adminPassword', 'jFZ3/Hce3LA7lE77');
+        $this->_set_xml('adminPassword', $bind_pw);
 
         // Restart Openfire
         //-----------------
@@ -383,6 +386,29 @@ class Openfire extends Daemon
             "ON DUPLICATE KEY UPDATE name = VALUES(name), propValue = VALUES(propValue);";
 
         $system_database->run_update(self::DATABASE, $query);
+    }
+
+    /**
+     * Resets security configuration back to default.
+     *
+     * The security.xml parameters disappear.  Copy fresh default when needed.
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    protected function _reset_security_config()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        // TODO: just inject the LDAP parameters instead of stomping
+        // on security.xml.
+
+        $file = new File(clearos_app_base('openfire') . '/deploy/security.xml');
+        $file->copy_to(self::FILE_SECURITY_CONFIG);
+
+        $file = new File(self::FILE_SECURITY_CONFIG);
+        $file->chown('openfire', 'openfire');
     }
 
     /**
