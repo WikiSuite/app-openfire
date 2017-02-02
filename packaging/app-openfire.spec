@@ -21,10 +21,11 @@ Summary: Openfire - Core
 License: LGPLv3
 Group: ClearOS/Libraries
 Requires: app-base-core
-Requires: app-system-database-core >= 1:2.3.3
 Requires: app-groups-core
-Requires: app-network-core
 Requires: app-ldap-core
+Requires: app-network-core
+Requires: app-openfire-plugin-core
+Requires: app-system-database-core >= 1:2.3.3
 Requires: openfire
 
 %description core

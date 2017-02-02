@@ -34,10 +34,11 @@ $app['controllers']['policy']['title'] = lang('base_app_policy');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['core_requires'] = array(
-    'app-system-database-core >= 1:2.3.3',
     'app-groups-core',
-    'app-network-core',
     'app-ldap-core',
+    'app-network-core',
+    'app-openfire-plugin-core',
+    'app-system-database-core >= 1:2.3.3',
     'openfire',
 );
 
