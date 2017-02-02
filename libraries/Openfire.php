@@ -58,23 +58,23 @@ clearos_load_language('network');
 
 use \clearos\apps\base\Daemon as Daemon;
 use \clearos\apps\base\File as File;
-use \clearos\apps\groups\Group_Engine as Group_Engine;
-use \clearos\apps\groups\Group_Manager_Factory as Group_Manager_Factory;
 use \clearos\apps\ldap\LDAP_Factory as LDAP_Factory;
 use \clearos\apps\network\Domain as Domain;
 use \clearos\apps\network\Hostname as Hostname;
 use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\system_database\System_Database as System_Database;
+use \clearos\apps\users\User_Engine as User_Engine;
+use \clearos\apps\users\User_Manager_Factory as User_Manager_Factory;
 
 clearos_load_library('base/Daemon');
 clearos_load_library('base/File');
-clearos_load_library('groups/Group_Engine');
-clearos_load_library('groups/Group_Manager_Factory');
 clearos_load_library('ldap/LDAP_Factory');
 clearos_load_library('network/Domain');
 clearos_load_library('network/Hostname');
 clearos_load_library('network/Network_Utils');
 clearos_load_library('system_database/System_Database');
+clearos_load_library('users/User_Engine');
+clearos_load_library('users/User_Manager_Factory');
 
 // Exceptions
 //-----------
@@ -171,18 +171,8 @@ class Openfire extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $manager = Group_Manager_Factory::create();
-        $groups = $manager->get_details(Group_Engine::FILTER_ALL);
-        $base_domain = $this->get_xmpp_domain();
-
-        $list = [];
-
-        if (array_key_exists('openfire_plugin', $groups)) {
-            foreach ($groups['openfire_plugin']['core']['members'] as $username) {
-                $openfire_username = $username . '@' . $base_domain;
-                $list[$openfire_username] = $username;
-            }
-        }
+        $user_manager = User_Manager_Factory::create();
+        $list = $user_manager->get_list(User_Engine::FILTER_NORMAL);
 
         return $list;
     }
@@ -330,7 +320,7 @@ class Openfire extends Daemon
 
         $all_users = $this->get_possible_admins();
 
-        if (!array_key_exists($username, $all_users))
+        if (!in_array($username, $all_users))
             return lang('openfire_administrator_account_invalid');
     }
 

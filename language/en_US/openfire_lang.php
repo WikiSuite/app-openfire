@@ -8,3 +8,5 @@ $lang['openfire_go_to_admin_console'] = 'Go To Admin Console';
 $lang['openfire_admin_console_not_running_help'] = 'Openfire is not running, so access to the Admin Console is not available.';
 $lang['openfire_administrator_account_invalid'] = 'Administrator account is invalid.';
 $lang['openfire_xmpp_domain'] = 'XMPP Domain';
+$lang['openfire_select_admin_and_settings'] = 'Please select an Openfire administrator and set default configuration options.';
+$lang['openfire_no_users_exist'] = 'Openfire requires an administrator, so at least one user account must exist.';

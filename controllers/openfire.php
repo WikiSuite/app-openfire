@@ -68,13 +68,29 @@ class Openfire extends ClearOS_Controller
         // Load dependencies
         //------------------
 
+        $this->load->library('openfire/Openfire');
         $this->lang->load('openfire');
+
+        // Load view data
+        //---------------
+
+        try {
+            $admin = $this->openfire->get_admin();
+            $data['admin_exists'] = empty($admin) ? FALSE : TRUE;
+        } catch (Exception $e) {
+            $this->page->view_exception($e);
+            return;
+        }
 
         // Load views
         //-----------
 
-        $views = array('openfire/server', 'openfire/settings');
+        if ($data['admin_exists']) {
+            $views = array('openfire/server', 'openfire/settings', 'openfire/policy');
 
-        $this->page->view_forms($views, lang('openfire_app_name'));
+            $this->page->view_forms($views, lang('openfire_app_name'));
+        } else {
+            redirect('/openfire/settings/edit');
+        }
     }
 }

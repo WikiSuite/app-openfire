@@ -73,24 +73,33 @@ if ($form_type === 'edit') {
 
 echo "<div id='openfire_running' style='display:none;'>";
 
-$options['buttons']  = array(
-    anchor_custom($admin_url, lang('openfire_go_to_admin_console'), 'high', array('target' => '_blank'))
-);
+// Show warning if nobody is an Openfire user or no users exist
+if (empty($admins)) {
+    echo infobox_warning(lang('base_warning'), lang('openfire_no_users_exist'));
+} else {
+    if (empty($admin)) {
+        echo infobox_warning(lang('base_warning'), lang('openfire_select_admin_and_settings'));
+    } else {
+        $options['buttons']  = array(
+            anchor_custom($admin_url, lang('openfire_go_to_admin_console'), 'high', array('target' => '_blank'))
+        );
 
-echo infobox_highlight(
-    lang('openfire_admin_console'),
-    lang('openfire_admin_console_help'),
-    $options
-);
+        echo infobox_highlight(
+            lang('openfire_admin_console'),
+            lang('openfire_admin_console_help'),
+            $options
+        );
+    }
 
-echo form_open('openfire/settings');
-echo form_header(lang('base_settings'));
+    echo form_open('openfire/settings');
+    echo form_header(lang('base_settings'));
 
-echo field_dropdown('admin', $admins, $admin, lang('base_administrator'), $read_only);
-echo field_input('domain', $domain, lang('openfire_xmpp_domain'), $read_only);
-echo field_button_set($buttons);
+    echo field_simple_dropdown('admin', $admins, $admin, lang('base_administrator'), $read_only);
+    echo field_input('domain', $domain, lang('openfire_xmpp_domain'), $read_only);
+    echo field_button_set($buttons);
 
-echo form_footer();
-echo form_close();
+    echo form_footer();
+    echo form_close();
+}
 
 echo "</div>";
