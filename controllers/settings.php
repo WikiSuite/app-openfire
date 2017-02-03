@@ -93,14 +93,14 @@ class Settings extends ClearOS_Controller
         // Load dependencies
         //------------------
 
-        $this->load->library('openfire/Openfire');
         $this->lang->load('openfire');
+        $this->load->library('openfire/Openfire');
 
         // Set validation rules
         //---------------------
 
         $this->form_validation->set_policy('admin', 'openfire/Openfire', 'validate_username');
-        $this->form_validation->set_policy('domain', 'openfire/Openfire', 'validate_xmpp_domain');
+        $this->form_validation->set_policy('domain', 'openfire/Openfire', 'validate_xmpp_domain', TRUE);
         $form_ok = $this->form_validation->run();
 
         // Handle form submit
@@ -113,6 +113,7 @@ class Settings extends ClearOS_Controller
                 $this->openfire->reset(FALSE);
 
                 $this->page->set_status_updated();
+                redirect('/openfire/settings');
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;

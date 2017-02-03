@@ -91,7 +91,7 @@ if (empty($admins)) {
         );
     }
 
-    echo form_open('openfire/settings');
+    echo form_open('openfire/settings/edit');
     echo form_header(lang('base_settings'));
 
     echo field_simple_dropdown('admin', $admins, $admin, lang('base_administrator'), $read_only);
