@@ -79,7 +79,7 @@ if (empty($admins)) {
 } else {
     if (empty($admin)) {
         echo infobox_warning(lang('base_warning'), lang('openfire_select_admin_and_settings'));
-    } else {
+    } else if ($form_type != 'edit') {
         $options['buttons']  = array(
             anchor_custom($admin_url, lang('openfire_go_to_admin_console'), 'high', array('target' => '_blank'))
         );
