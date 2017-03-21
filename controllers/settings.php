@@ -108,8 +108,9 @@ class Settings extends ClearOS_Controller
 
         if ($this->input->post('submit') && $form_ok) {
             try {
-                $this->openfire->set_admin($this->input->post('admin'));
+                // Ndte: set the domain first since it's needed for setting the admin
                 $this->openfire->set_xmpp_domain($this->input->post('domain'));
+                $this->openfire->set_admin($this->input->post('admin'));
                 $this->openfire->reset(FALSE);
 
                 $this->page->set_status_updated();

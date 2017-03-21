@@ -140,8 +140,9 @@ class Openfire extends Daemon
         $list = $this->_get_property(self::PROPERTY_ADMINS);
 
         $first_match = preg_replace('/,.*/', '', $list);
+        $username_only = preg_replace('/@.*/', '', $first_match);
 
-        return $first_match;
+        return $username_only;
     }
 
     /**
@@ -189,6 +190,9 @@ class Openfire extends Daemon
         clearos_profile(__METHOD__, __LINE__);
 
         Validation_Exception::is_valid($this->validate_username($username));
+
+        $domain = $this->get_xmpp_domain();
+        $username = $username . '@' . $domain;
 
         $this->_set_property(self::PROPERTY_ADMINS, $username);
     }
