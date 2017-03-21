@@ -110,6 +110,7 @@ class Openfire extends Daemon
     const FILE_SECURITY_CONFIG = '/usr/share/openfire/conf/security.xml';
     const PROPERTY_ADMINS = 'admin.authorizedJIDs';
     const PROPERTY_XMPP_DOMAIN = 'xmpp.domain';
+    const PROPERTY_XMPP_FQDN = 'xmpp.fqdn';
 
     ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
@@ -157,6 +158,22 @@ class Openfire extends Daemon
         clearos_profile(__METHOD__, __LINE__);
 
         $domain = $this->_get_property(self::PROPERTY_XMPP_DOMAIN);
+
+        return $domain;
+    }
+
+    /**
+     * Returns XMPP fully-qualified domain name.
+     *
+     * @return string XMPP domain
+     * @throws Engine_Exception
+     */
+
+    public function get_xmpp_fqdn()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $domain = $this->_get_property(self::PROPERTY_XMPP_FQDN);
 
         return $domain;
     }
@@ -250,6 +267,22 @@ class Openfire extends Daemon
     }
 
     /**
+     * Sets XMPP fully-qualified hostname.
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function set_xmpp_fqdn($fqdn)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        Validation_Exception::is_valid($this->validate_xmpp_fqdn($fqdn));
+
+        $this->_set_property(self::PROPERTY_XMPP_FQDN, $fqdn);
+    }
+
+    /**
      * Updates properties when underlying configuration changes.
      *
      * If an adminstrator makes changes to the ClearOS system, some
@@ -295,11 +328,11 @@ class Openfire extends Daemon
     ///////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Validation routine for DNS server.
+     * Validation routine for XMPP domain.
      *
      * @param string $ip IP address
      *
-     * @return string error message if DNS server IP address is invalid
+     * @return string error message if domain is invalid
      */
 
     public function validate_xmpp_domain($domain)
@@ -311,11 +344,27 @@ class Openfire extends Daemon
     }
 
     /**
-     * Validation routine for DNS server.
+     * Validation routine for XMPP fully-qualified domain.
      *
      * @param string $ip IP address
      *
-     * @return string error message if DNS server IP address is invalid
+     * @return string error message if FQDN is invalid
+     */
+
+    public function validate_xmpp_fqdn($fqdn)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (! Network_Utils::is_valid_hostname($fqdn))
+            return lang('network_hostname_invalid');
+    }
+
+    /**
+     * Validation routine for username.
+     *
+     * @param string $ip IP address
+     *
+     * @return string error message if username is invalid
      */
 
     public function validate_username($username)

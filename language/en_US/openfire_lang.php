@@ -10,3 +10,4 @@ $lang['openfire_administrator_account_invalid'] = 'Administrator account is inva
 $lang['openfire_xmpp_domain'] = 'XMPP Domain';
 $lang['openfire_select_admin_and_settings'] = 'Please select an Openfire administrator and set default configuration options.';
 $lang['openfire_no_users_exist'] = 'Openfire requires an administrator, so at least one user account must exist.';
+$lang['openfire_server_hostname_fqdn'] = 'Server Hostname (FQDN)';

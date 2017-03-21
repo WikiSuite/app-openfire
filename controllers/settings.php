@@ -101,6 +101,7 @@ class Settings extends ClearOS_Controller
 
         $this->form_validation->set_policy('admin', 'openfire/Openfire', 'validate_username');
         $this->form_validation->set_policy('domain', 'openfire/Openfire', 'validate_xmpp_domain', TRUE);
+        $this->form_validation->set_policy('fqdn', 'openfire/Openfire', 'validate_xmpp_fqdn', TRUE);
         $form_ok = $this->form_validation->run();
 
         // Handle form submit
@@ -109,6 +110,7 @@ class Settings extends ClearOS_Controller
         if ($this->input->post('submit') && $form_ok) {
             try {
                 // Ndte: set the domain first since it's needed for setting the admin
+                $this->openfire->set_xmpp_fqdn($this->input->post('fqdn'));
                 $this->openfire->set_xmpp_domain($this->input->post('domain'));
                 $this->openfire->set_admin($this->input->post('admin'));
                 $this->openfire->reset(FALSE);
@@ -130,6 +132,7 @@ class Settings extends ClearOS_Controller
             $data['admins'] = $this->openfire->get_possible_admins();
             $data['admin'] = $this->openfire->get_admin();
             $data['domain'] = $this->openfire->get_xmpp_domain();
+            $data['fqdn'] = $this->openfire->get_xmpp_fqdn();
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
