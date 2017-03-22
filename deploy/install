@@ -23,7 +23,7 @@ if [ -e /usr/share/openfire/conf/security.xml ]; then
     cp /usr/share/openfire/conf/security.xml /var/clearos/openfire/backup/security.xml.$TIMESTAMP
 fi
 
-cp /usr/clearos/apps/openfire/deploy/openfire.xml /usr/share/openfire/conf/openfire.xml
+cp /usr/clearos/apps/openfire/deploy/security.xml /usr/share/openfire/conf/security.xml
 
 # Initialize database
 #--------------------

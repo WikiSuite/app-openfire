@@ -64,7 +64,7 @@ if [ -e "$APP_CONFIG" ]; then
 
     # TODO: use API call instead.  This will overmatch at some point!
     echo "Updating database password in Openfire configuration"
-    sed -i -e "s/^[[:space:]]*<password>.*/      <password>$APP_PASSWORD<\/password>/" $APP_CONFIG
+    sed -i -e "s/^[[:space:]]*<password.*/      <password>$APP_PASSWORD_SEDSAFE<\/password>/" $APP_CONFIG
 
     if [ "$1" == "install" ]; then
         echo "Skipping Openfire restart on install mode"
