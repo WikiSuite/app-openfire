@@ -7,7 +7,7 @@ Summary: Openfire
 License: GPLv3
 Group: ClearOS/Apps
 Packager: eGloo
-Vendor: Marc Laporte
+Vendor: WikiSuite
 Source: %{name}-%{version}.tar.gz
 Buildarch: noarch
 Requires: %{name}-core = 1:%{version}-%{release}
@@ -82,6 +82,7 @@ exit 0
 %files core
 %defattr(-,root,root)
 %exclude /usr/clearos/apps/openfire/packaging
+%exclude /usr/clearos/apps/openfire/unify.json
 %dir /usr/clearos/apps/openfire
 %dir /var/clearos/openfire
 %dir /var/clearos/openfire/backup
