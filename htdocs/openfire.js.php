@@ -57,30 +57,54 @@ $(document).ready(function() {
     $('#openfire_not_running').hide();
     $('#openfire_running').hide();
 
-    getOpenfireStatus();
+    if ($(location).attr('href').match('.*openfire\/settings\/edit$') != null) {
+        $('#openfire_status').hide();
+        $('#openfire_running').show();
+    } else {
+        $('#openfire_status').show();
+        getOpenfireStatus(0, 0);
+    }
 });
 
 
 // Functions
 //----------
 
-function getOpenfireStatus() {
+function getOpenfireStatus(upCount, downCount) {
     $.ajax({
         url: '/app/openfire/server/status',
         method: 'GET',
         dataType: 'json',
         success : function(payload) {
             if (payload.status == 'running') {
-                $('#openfire_not_running').hide();
-                $('#openfire_running').show();
+                downCount = 0;
+                upCount++;
+                if (upCount <= 3) {
+                    $('#openfire_status').show();
+                    $('#openfire_not_running').hide();
+                    $('#openfire_running').hide();
+                } else {
+                    $('#openfire_status').hide();
+                    $('#openfire_not_running').hide();
+                    $('#openfire_running').show();
+                }
             } else {
-                $('#openfire_not_running').show();
-                $('#openfire_running').hide();
+                upCount = 0;
+                downCount++;
+                if (downCount <= 2) {
+                    $('#openfire_status').show();
+                    $('#openfire_not_running').hide();
+                    $('#openfire_running').hide();
+                } else {
+                    $('#openfire_status').hide();
+                    $('#openfire_not_running').show();
+                    $('#openfire_running').hide();
+                }
             }
-            window.setTimeout(getOpenfireStatus, 1000);
+            window.setTimeout(getOpenfireStatus, 2000, upCount, downCount);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-            window.setTimeout(getOpenfireStatus, 1000);
+            window.setTimeout(getOpenfireStatus, 2000, upCount, downCount);
         }
     });
 }
