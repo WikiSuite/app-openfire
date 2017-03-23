@@ -34,6 +34,7 @@ $app['controllers']['policy']['title'] = lang('base_app_policy');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['core_requires'] = array(
+    'app-users-core >= 1:2.3.23',
     'app-groups-core',
     'app-ldap-core',
     'app-network-core',
