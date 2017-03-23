@@ -304,17 +304,21 @@ class Openfire extends Daemon
         $ldap = LDAP_Factory::create();
         $base_dn = $ldap->get_base_dn();
         $bind_pw = $ldap->get_bind_password();
+        $admin_dn = 'cn=manager,ou=Internal,' . $base_dn;
         $search_filter = '(memberof=cn=openfire_plugin,ou=Groups,ou=Accounts,' . $base_dn . ')';
 
         $this->_set_property('ldap.baseDN', $base_dn);
         $this->_set_property('ldap.searchFilter', $search_filter);
+        $this->_set_property('ldap.adminDN', $admin_dn);
+        $this->_set_property('ldap.adminPassword', $bind_pw);
+        $this->_set_property('provider.auth.className', 'org.jivesoftware.openfire.ldap.LdapAuthProvider');
 
         // Update adminDN and adminPassword via openfire.xml
         //--------------------------------------------------
         // TODO: more Active Directory changes required
 
         $this->_reset_security_config();
-        $this->_set_xml('adminDN', 'cn=manager,ou=Internal,' . $base_dn);
+        $this->_set_xml('adminDN', $admin_dn);
         $this->_set_xml('adminPassword', $bind_pw);
 
         // Restart Openfire
