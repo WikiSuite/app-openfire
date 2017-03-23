@@ -58,6 +58,7 @@ clearos_load_language('network');
 
 use \clearos\apps\base\Daemon as Daemon;
 use \clearos\apps\base\File as File;
+use \clearos\apps\groups\Group_Factory as Group_Factory;
 use \clearos\apps\ldap\LDAP_Factory as LDAP_Factory;
 use \clearos\apps\network\Domain as Domain;
 use \clearos\apps\network\Hostname as Hostname;
@@ -65,10 +66,10 @@ use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\system_database\System_Database as System_Database;
 use \clearos\apps\users\User_Engine as User_Engine;
 use \clearos\apps\users\User_Factory as User_Factory;
-use \clearos\apps\users\User_Manager_Factory as User_Manager_Factory;
 
 clearos_load_library('base/Daemon');
 clearos_load_library('base/File');
+clearos_load_library('groups/Group_Factory');
 clearos_load_library('ldap/LDAP_Factory');
 clearos_load_library('network/Domain');
 clearos_load_library('network/Hostname');
@@ -76,7 +77,6 @@ clearos_load_library('network/Network_Utils');
 clearos_load_library('system_database/System_Database');
 clearos_load_library('users/User_Engine');
 clearos_load_library('users/User_Factory');
-clearos_load_library('users/User_Manager_Factory');
 
 // Exceptions
 //-----------
@@ -192,8 +192,8 @@ class Openfire extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $user_manager = User_Manager_Factory::create();
-        $list = $user_manager->get_list(User_Engine::FILTER_NORMAL);
+        $group = Group_Factory::create('openfire_plugin');
+        $list = $group->get_members();
 
         return $list;
     }
@@ -209,7 +209,7 @@ class Openfire extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        Validation_Exception::is_valid($this->validate_username($username));
+        // Validation_Exception::is_valid($this->validate_username($username));
 
         $domain = $this->get_xmpp_domain();
         $username = $username . '@' . $domain;
@@ -324,8 +324,8 @@ class Openfire extends Daemon
         // TODO: more Active Directory changes required
 
         $this->_reset_security_config();
-        $this->_set_xml('adminDN', $admin_dn);
-        $this->_set_xml('adminPassword', $bind_pw);
+        // $this->_set_xml('adminDN', $admin_dn);
+        // $this->_set_xml('adminPassword', $bind_pw);
 
         // Restart Openfire
         //-----------------
