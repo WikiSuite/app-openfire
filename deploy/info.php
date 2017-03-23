@@ -45,12 +45,17 @@ $app['core_requires'] = array(
 $app['core_directory_manifest'] = array(
     '/var/clearos/openfire' => array(),
     '/var/clearos/openfire/backup' => array(),
+    '/var/clearos/openfire/focus-user' => array(),
 );
 
 $app['core_file_manifest'] = array(
     'openfire.php'=> array('target' => '/var/clearos/base/daemon/openfire.php'),
     'openldap-configuration-event'=> array(
         'target' => '/var/clearos/events/openldap_configuration/openfire',
+        'mode' => '0755'
+    ),
+    'openldap-online-event'=> array(
+        'target' => '/var/clearos/events/openldap_online/openfire',
         'mode' => '0755'
     ),
 );

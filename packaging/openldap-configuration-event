@@ -65,7 +65,7 @@ use \Exception as Exception;
 
 try {
     $openfire = new Openfire();
-    $openfire->update_properties();
+    $openfire->update_ldap_properties();
 } catch (Exception $e) {
     echo clearos_exception_message($e) . "\n";
 }

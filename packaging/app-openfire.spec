@@ -43,8 +43,10 @@ cp -r * %{buildroot}/usr/clearos/apps/openfire/
 
 install -d -m 0755 %{buildroot}/var/clearos/openfire
 install -d -m 0755 %{buildroot}/var/clearos/openfire/backup
+install -d -m 0755 %{buildroot}/var/clearos/openfire/focus-user
 install -D -m 0644 packaging/openfire.php %{buildroot}/var/clearos/base/daemon/openfire.php
 install -D -m 0755 packaging/openldap-configuration-event %{buildroot}/var/clearos/events/openldap_configuration/openfire
+install -D -m 0755 packaging/openldap-online-event %{buildroot}/var/clearos/events/openldap_online/openfire
 
 %post
 logger -p local6.notice -t installer 'app-openfire - installing'
@@ -86,8 +88,10 @@ exit 0
 %dir /usr/clearos/apps/openfire
 %dir /var/clearos/openfire
 %dir /var/clearos/openfire/backup
+%dir /var/clearos/openfire/focus-user
 /usr/clearos/apps/openfire/deploy
 /usr/clearos/apps/openfire/language
 /usr/clearos/apps/openfire/libraries
 /var/clearos/base/daemon/openfire.php
 /var/clearos/events/openldap_configuration/openfire
+/var/clearos/events/openldap_online/openfire

@@ -113,6 +113,10 @@ class Settings extends ClearOS_Controller
                 $this->openfire->set_xmpp_fqdn($this->input->post('fqdn'));
                 $this->openfire->set_xmpp_domain($this->input->post('domain'));
                 $this->openfire->set_admin($this->input->post('admin'));
+
+                // A bit hacky, but add/update ofmeet user at this point too
+                $this->openfire->update_ofmeet_properties();
+
                 $this->openfire->reset(FALSE);
 
                 $this->page->set_status_updated();

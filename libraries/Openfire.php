@@ -64,6 +64,7 @@ use \clearos\apps\network\Hostname as Hostname;
 use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\system_database\System_Database as System_Database;
 use \clearos\apps\users\User_Engine as User_Engine;
+use \clearos\apps\users\User_Factory as User_Factory;
 use \clearos\apps\users\User_Manager_Factory as User_Manager_Factory;
 
 clearos_load_library('base/Daemon');
@@ -74,6 +75,7 @@ clearos_load_library('network/Hostname');
 clearos_load_library('network/Network_Utils');
 clearos_load_library('system_database/System_Database');
 clearos_load_library('users/User_Engine');
+clearos_load_library('users/User_Factory');
 clearos_load_library('users/User_Manager_Factory');
 
 // Exceptions
@@ -111,6 +113,7 @@ class Openfire extends Daemon
     const PROPERTY_ADMINS = 'admin.authorizedJIDs';
     const PROPERTY_XMPP_DOMAIN = 'xmpp.domain';
     const PROPERTY_XMPP_FQDN = 'xmpp.fqdn';
+    const DEFAULT_OFMEET_USER = 'openfire-focus';
 
     ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
@@ -264,6 +267,9 @@ class Openfire extends Daemon
             $new_admin = preg_replace('/@.*/', '@' . $domain, $admin);
             $this->set_admin($new_admin);
         }
+
+        // And so does the ofmeet focus user.
+        $this->_set_property('org.jitsi.videobridge.ofmeet.focus.user.jid', self::DEFAULT_OFMEET_USER .  '@' . $domain);
     }
 
     /**
@@ -293,7 +299,7 @@ class Openfire extends Daemon
      * @throws Engine_Exception
      */
 
-    public function update_properties()
+    public function update_ldap_properties()
     {
         clearos_profile(__METHOD__, __LINE__);
 
@@ -305,7 +311,7 @@ class Openfire extends Daemon
         $base_dn = $ldap->get_base_dn();
         $bind_pw = $ldap->get_bind_password();
         $admin_dn = 'cn=manager,ou=Internal,' . $base_dn;
-        $search_filter = '(memberof=cn=openfire_plugin,ou=Groups,ou=Accounts,' . $base_dn . ')';
+        $search_filter = '(|(memberof=cn=openfire_plugin,ou=Groups,ou=Accounts,' . $base_dn . ')(uid=openfire-focus))';
 
         $this->_set_property('ldap.baseDN', $base_dn);
         $this->_set_property('ldap.searchFilter', $search_filter);
@@ -325,6 +331,41 @@ class Openfire extends Daemon
         //-----------------
 
         $this->reset(FALSE);
+    }
+
+    /**
+     * Updates ofmeet focus user.
+     *
+     * The ofmeet plugin requires a special user.
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function update_ofmeet_properties()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $password = 'FIXME12333';
+        $xmpp_domain = $this->get_xmpp_domain();
+
+        $this->_set_property('org.jitsi.videobridge.ofmeet.focus.user.jid', self::DEFAULT_OFMEET_USER .  '@' . $xmpp_domain);
+        $this->_set_property('org.jitsi.videobridge.ofmeet.focus.user.password', $password);
+
+        $user = User_Factory::create(self::DEFAULT_OFMEET_USER);
+
+        if ($user->exists()) {
+            $user->reset_password($password, $password, 'openfire', FALSE);
+        } else {
+            clearos_log('openfire', 'creating focus user');
+            $user_info['core']['first_name'] = 'Openfire';
+            $user_info['core']['last_name'] = 'Focus';
+            $user_info['core']['type'] = 'built-in';
+            $user_info['core']['home_directory'] = '/var/clearos/openfire/focus-user';
+
+            $user_info['plugins']['openfire']['state'] = TRUE;
+            $user->add($user_info, $password);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////

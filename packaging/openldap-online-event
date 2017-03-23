@@ -1,13 +1,14 @@
+#!/usr/clearos/sandbox/usr/bin/php
 <?php
 
 /**
- * Openfire daemon controller.
+ * Openfire property update for ClearOS.
  *
  * @category   apps
  * @package    openfire
- * @subpackage controllers
+ * @subpackage scripts
  * @author     Marc Laporte
- * @copyright  2016 Marc Laporte
+ * @copyright  2017 Marc Laporte
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       https://github.com/eglooca/app-openfire
  */
@@ -37,50 +38,36 @@ $bootstrap = getenv('CLEAROS_BOOTSTRAP') ? getenv('CLEAROS_BOOTSTRAP') : '/usr/c
 require_once $bootstrap . '/bootstrap.php';
 
 ///////////////////////////////////////////////////////////////////////////////
+// T R A N S L A T I O N S
+///////////////////////////////////////////////////////////////////////////////
+
+clearos_load_language('openfire');
+
+///////////////////////////////////////////////////////////////////////////////
 // D E P E N D E N C I E S
 ///////////////////////////////////////////////////////////////////////////////
 
-require clearos_app_base('base') . '/controllers/daemon.php';
+// Classes
+//--------
+
+use \clearos\apps\openfire\Openfire as Openfire;
+
+clearos_load_library('openfire/Openfire');
+
+// Exceptions
+//-----------
+
+use \Exception as Exception;
 
 ///////////////////////////////////////////////////////////////////////////////
-// C L A S S
+// M A I N
 ///////////////////////////////////////////////////////////////////////////////
 
-/**
- * Openfire daemon controller.
- *
- * @category   apps
- * @package    openfire
- * @subpackage controllers
- * @author     Marc Laporte
- * @copyright  2016 Marc Laporte
- * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
- * @link       https://github.com/eglooca/app-openfire
- */
-
-class Server extends Daemon
-{
-    function __construct()
-    {
-        parent::__construct('openfire', 'openfire');
-    }
-
-    /**
-     * Start.
-     *
-     * @return view
-     */
-
-    function start()
-    {
-        $this->load->library('openfire/Openfire');
-
-        try {
-            $this->openfire->update_ldap_properties();
-            $this->openfire->set_running_state(TRUE);
-            $this->openfire->set_boot_state(TRUE);
-        } catch (Exception $e) {
-            // Keep going
-        }
-    }
+try {
+    $openfire = new Openfire();
+    $openfire->update_ofmeet_properties();
+} catch (Exception $e) {
+    echo clearos_exception_message($e) . "\n";
 }
+
+// vim: syntax=php ts=4
