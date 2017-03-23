@@ -16,58 +16,58 @@
     property viewer and editor is included in the admin console.
 -->
 <!-- root element, all properties must be under this element -->
-<jive> 
-  <adminConsole> 
-    <!-- Disable either port by setting the value to -1 -->  
-    <port>9090</port>  
-    <securePort>9091</securePort> 
-  </adminConsole>  
-  <locale>en</locale>  
+<jive>
+  <adminConsole>
+    <!-- Disable either port by setting the value to -1 -->
+    <port>9090</port>
+    <securePort>9091</securePort>
+  </adminConsole>
+  <locale>en</locale>
   <!-- Network settings. By default, Openfire will bind to all network interfaces.
       Alternatively, you can specify a specific network interfaces that the server
       will listen on. For example, 127.0.0.1. This setting is generally only useful
-       on multi-homed servers. -->  
+       on multi-homed servers. -->
   <!--
     <network>
         <interface></interface>
     </network>
-    -->  
+    -->
   <!-- SPDY  Protocol is npn.
     	(note: npn does not work with Java 8)
-    	add -Xbootclasspath/p:/OPENFIRE_HOME/lib/npn-boot.jar to .vmoptions file    -->  
+    	add -Xbootclasspath/p:/OPENFIRE_HOME/lib/npn-boot.jar to .vmoptions file    -->
   <!--
     <spdy>
     	<protocol>npn</protocol>
     </spdy>
-    -->  
-  <!-- XEP-0198 properties -->  
-  <stream> 
-    <management> 
-      <!-- Whether stream management is offered to clients by server. -->  
-      <active>true</active>  
+    -->
+  <!-- XEP-0198 properties -->
+  <stream>
+    <management>
+      <!-- Whether stream management is offered to clients by server. -->
+      <active>true</active>
       <!-- Number of stanzas sent to client before a stream management
-    			 acknowledgement request is made. -->  
-      <requestFrequency>5</requestFrequency> 
-    </management> 
-  </stream>  
-  <connectionProvider> 
-    <className>org.jivesoftware.database.DefaultConnectionProvider</className> 
-  </connectionProvider>  
-  <database> 
-    <defaultProvider> 
-      <driver>com.mysql.jdbc.Driver</driver>  
-      <serverURL>jdbc:mysql://localhost:3308/openfire?rewriteBatchedStatements=true</serverURL>  
-      <username>openfire</username>  
-      <password>openfire_db_password</password>  
-      <testSQL>select 1</testSQL>  
-      <testBeforeUse>false</testBeforeUse>  
-      <testAfterUse>false</testAfterUse>  
-      <minConnections>5</minConnections>  
-      <maxConnections>25</maxConnections>  
-      <connectionTimeout>1.0</connectionTimeout> 
-    </defaultProvider> 
-  </database>  
-  <provider>  
+    			 acknowledgement request is made. -->
+      <requestFrequency>5</requestFrequency>
+    </management>
+  </stream>
+  <connectionProvider>
+    <className>org.jivesoftware.database.DefaultConnectionProvider</className>
+  </connectionProvider>
+  <database>
+    <defaultProvider>
+      <driver>com.mysql.jdbc.Driver</driver>
+      <serverURL>jdbc:mysql://localhost:3308/openfire?rewriteBatchedStatements=true</serverURL>
+      <username>openfire</username>
+      <password>openfire_db_password</password>
+      <testSQL>select 1</testSQL>
+      <testBeforeUse>false</testBeforeUse>
+      <testAfterUse>false</testAfterUse>
+      <minConnections>5</minConnections>
+      <maxConnections>25</maxConnections>
+      <connectionTimeout>1.0</connectionTimeout>
+    </defaultProvider>
+  </database>
+  <provider>
     <auth>
       <className>org.jivesoftware.openfire.ldap.LdapAuthProvider</className>
     </auth>
@@ -80,9 +80,8 @@
     <vcard>
       <className>org.jivesoftware.openfire.ldap.LdapVCardProvider</className>
     </vcard>
-  </provider>  
+  </provider>
   <ldap>
-    <baseDN>dc=clear7,dc=lan</baseDN>
     <autoFollowAliasReferrals>true</autoFollowAliasReferrals>
     <autoFollowReferrals>false</autoFollowReferrals>
     <connectionPoolEnabled>true</connectionPoolEnabled>
@@ -94,14 +93,64 @@
     <groupNameField>cn</groupNameField>
     <groupSearchFilter>(objectClass=groupOfNames)</groupSearchFilter>
     <host>127.0.0.1</host>
-    <ldapDebugEnabled>true</ldapDebugEnabled>
+    <ldapDebugEnabled>false</ldapDebugEnabled>
     <nameField>cn</nameField>
     <port>389</port>
     <posixMode>false</posixMode>
     <sslEnabled>false</sslEnabled>
     <startTlsEnabled>false</startTlsEnabled>
     <usernameField>uid</usernameField>
-    <vcard-mapping><![CDATA[\n<vCard xmlns=\"vcard-temp\">\n  <N>\n    <GIVEN>{cn}</GIVEN>\n  </N> \n  <EMAIL>\n    <INTERNET/> \n    <USERID>{mail}</USERID>\n  </EMAIL> \n  <FN>{cn}</FN> \n  <NICKNAME>{uid}</NICKNAME> \n  <PHOTO>\n    <TYPE>image/jpeg</TYPE> \n    <BINVAL>{jpegPhoto}</BINVAL>\n  </PHOTO> \n  <ADR>\n    <HOME/>\n  </ADR> \n  <ADR>\n    <WORK/> \n    <STREET>{street}</STREET> \n    <LOCALITY>{l}</LOCALITY> \n    <REGION>{st}</REGION> \n    <PCODE>{postalCode}</PCODE> \n    <CTRY>{c}</CTRY>\n  </ADR> \n  <TEL>\n    <WORK/> \n    <VOICE/> \n    <NUMBER>{telephoneNumber}</NUMBER>\n  </TEL> \n  <TEL>\n    <WORK/> \n    <CELL/> \n    <NUMBER>{mobile}</NUMBER>\n  </TEL> \n  <TEL>\n    <WORK/> \n    <FAX/> \n    <NUMBER>{facsimileTelephoneNumber}</NUMBER>\n  </TEL> \n  <TEL>\n    <WORK/> \n    <PAGER/> \n    <NUMBER>{pager}</NUMBER>\n  </TEL> \n  <TITLE>{title}</TITLE> \n  <ORG>\n    <ORGUNIT>{ou}</ORGUNIT>\n  </ORG>\n</vCard>]]></vcard-mapping>
-  </ldap>  
-  <setup>true</setup> 
+    <vcard-mapping><![CDATA[
+<vCard xmlns="vcard-temp">
+  <N>
+    <GIVEN>{cn}</GIVEN>
+  </N>
+  <EMAIL>
+    <INTERNET/>
+    <USERID>{mail}</USERID>
+  </EMAIL>
+  <FN>{cn}</FN>
+  <NICKNAME>{uid}</NICKNAME>
+  <PHOTO>
+    <TYPE>image/jpeg</TYPE>
+    <BINVAL>{jpegPhoto}</BINVAL>
+  </PHOTO>
+  <ADR>
+    <HOME/>
+  </ADR>
+  <ADR>
+    <WORK/>
+    <STREET>{street}</STREET>
+    <LOCALITY>{l}</LOCALITY>
+    <REGION>{st}</REGION>
+    <PCODE>{postalCode}</PCODE>
+    <CTRY>{c}</CTRY>
+  </ADR>
+  <TEL>
+    <WORK/>
+    <VOICE/>
+    <NUMBER>{telephoneNumber}</NUMBER>
+  </TEL>
+  <TEL>
+    <WORK/>
+    <CELL/>
+    <NUMBER>{mobile}</NUMBER>
+  </TEL>
+  <TEL>
+    <WORK/>
+    <FAX/>
+    <NUMBER>{facsimileTelephoneNumber}</NUMBER>
+  </TEL>
+  <TEL>
+    <WORK/>
+    <PAGER/>
+    <NUMBER>{pager}</NUMBER>
+  </TEL>
+  <TITLE>{title}</TITLE>
+  <ORG>
+    <ORGUNIT>{ou}</ORGUNIT>
+  </ORG>
+</vCard>]]></vcard-mapping>
+  </ldap>
+  <setup>true</setup>
 </jive>
