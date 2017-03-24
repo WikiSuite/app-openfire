@@ -193,7 +193,14 @@ class Openfire extends Daemon
         clearos_profile(__METHOD__, __LINE__);
 
         $group = Group_Factory::create('openfire_plugin');
-        $list = $group->get_members();
+        $raw_list = $group->get_members();
+
+        $list = [];
+
+        foreach ($raw_list as $member) {
+            if ($member != self::DEFAULT_OFMEET_USER)
+                $list[] = $member;
+        }
 
         return $list;
     }
