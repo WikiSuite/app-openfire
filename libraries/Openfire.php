@@ -64,7 +64,6 @@ use \clearos\apps\network\Domain as Domain;
 use \clearos\apps\network\Hostname as Hostname;
 use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\system_database\System_Database as System_Database;
-use \clearos\apps\users\User_Engine as User_Engine;
 use \clearos\apps\users\User_Factory as User_Factory;
 
 clearos_load_library('base/Daemon');
@@ -75,7 +74,6 @@ clearos_load_library('network/Domain');
 clearos_load_library('network/Hostname');
 clearos_load_library('network/Network_Utils');
 clearos_load_library('system_database/System_Database');
-clearos_load_library('users/User_Engine');
 clearos_load_library('users/User_Factory');
 
 // Exceptions
@@ -162,6 +160,11 @@ class Openfire extends Daemon
 
         $domain = $this->_get_property(self::PROPERTY_XMPP_DOMAIN);
 
+        if (empty($domain)) {
+            $domainObject = new Domain();
+            $domain = $domainObject->get_default();
+        }
+
         return $domain;
     }
 
@@ -177,6 +180,11 @@ class Openfire extends Daemon
         clearos_profile(__METHOD__, __LINE__);
 
         $domain = $this->_get_property(self::PROPERTY_XMPP_FQDN);
+
+        if (empty($domain)) {
+            $hostname = new Hostname();
+            $domain = $hostname->get_internet_hostname();
+        }
 
         return $domain;
     }
