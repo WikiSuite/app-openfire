@@ -117,7 +117,7 @@ class Settings extends ClearOS_Controller
                 // A bit hacky, but add/update ofmeet user at this point too
                 $this->openfire->update_ofmeet_properties();
 
-                $this->openfire->reset(FALSE);
+                $this->openfire->reset(TRUE);
 
                 $this->page->set_status_updated();
                 redirect('/openfire/settings');
