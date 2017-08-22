@@ -12,6 +12,19 @@ $app['packager'] = 'eGloo';
 $app['license'] = 'GPLv3';
 $app['license_core'] = 'LGPLv3';
 $app['description'] = lang('openfire_app_description');
+$app['powered_by'] = array(
+    'vendor' => array(
+        'name' => 'Ignite Realtime',
+        'url' => 'https://www.igniterealtime.org/',
+    ),
+    'packages' => array(
+        'openfire' => array(
+            'name' => 'Openfire',
+            'version' => '---',
+            'url' => 'https://www.igniterealtime.org/projects/openfire/',
+        ),
+    ),
+);
 
 /////////////////////////////////////////////////////////////////////////////
 // App name and categories
