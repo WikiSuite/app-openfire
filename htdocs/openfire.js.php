@@ -57,7 +57,7 @@ $(document).ready(function() {
     $('#openfire_not_running').hide();
     $('#openfire_running').hide();
 
-    if ($(location).attr('href').match('.*openfire\/settings\/edit$') != null) {
+    if ($(location).attr('href').match('.*openfire\/settings\/edit') != null) {
         $('#openfire_status').hide();
         $('#openfire_running').show();
     } else {

@@ -150,17 +150,19 @@ class Openfire extends Daemon
     /**
      * Returns XMPP domain.
      *
+     * @param boolean $return_default return a default value if XMPP domain is not set
+     *
      * @return string XMPP domain
      * @throws Engine_Exception
      */
 
-    public function get_xmpp_domain()
+    public function get_xmpp_domain($return_default = TRUE)
     {
         clearos_profile(__METHOD__, __LINE__);
 
         $domain = $this->_get_property(self::PROPERTY_XMPP_DOMAIN);
 
-        if (empty($domain)) {
+        if ($return_default && empty($domain)) {
             $domainObject = new Domain();
             $domain = $domainObject->get_default();
         }
@@ -171,17 +173,19 @@ class Openfire extends Daemon
     /**
      * Returns XMPP fully-qualified domain name.
      *
+     * @param boolean $return_default return a default value if XMPP FQDN is not set
+     8
      * @return string XMPP domain
      * @throws Engine_Exception
      */
 
-    public function get_xmpp_fqdn()
+    public function get_xmpp_fqdn($return_default = TRUE)
     {
         clearos_profile(__METHOD__, __LINE__);
 
         $domain = $this->_get_property(self::PROPERTY_XMPP_FQDN);
 
-        if (empty($domain)) {
+        if ($return_default && empty($domain)) {
             $hostname = new Hostname();
             $domain = $hostname->get_internet_hostname();
         }
@@ -211,6 +215,25 @@ class Openfire extends Daemon
         }
 
         return $list;
+    }
+
+    /**
+     * Returns initialization state.
+     *
+     * @return boolean TRUE if Openfire has been initialized
+     * @throws Engine_Exception
+     */
+
+    public function is_initialized()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $xmpp_domain = $this->get_xmpp_domain(FALSE);
+
+        if (empty($xmpp_domain))
+            return FALSE;
+        else
+            return TRUE;
     }
 
     /**

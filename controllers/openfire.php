@@ -75,9 +75,7 @@ class Openfire extends ClearOS_Controller
         //---------------
 
         try {
-            $admin = $this->openfire->get_admin();
-            $possible_admins = $this->openfire->get_possible_admins();
-            $data['admin_exists'] = empty($admin) ? FALSE : TRUE;
+            $initialized = $this->openfire->is_initialized();
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
@@ -86,7 +84,7 @@ class Openfire extends ClearOS_Controller
         // Load views
         //-----------
 
-        if ($data['admin_exists'] || empty($possible_admins)) {
+        if ($initialized) {
             $views = array('openfire/server', 'openfire/settings', 'openfire/policy');
             $this->page->view_forms($views, lang('openfire_app_name'));
         } else {

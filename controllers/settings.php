@@ -137,6 +137,8 @@ class Settings extends ClearOS_Controller
             $data['admin'] = $this->openfire->get_admin();
             $data['domain'] = $this->openfire->get_xmpp_domain();
             $data['fqdn'] = $this->openfire->get_xmpp_fqdn();
+            $data['initialized'] = $this->openfire->is_initialized();
+            $data['domain_edit'] = (empty($_REQUEST['domain_edit'])) ? FALSE : TRUE;
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

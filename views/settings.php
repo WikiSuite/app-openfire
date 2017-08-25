@@ -42,12 +42,14 @@ $this->lang->load('openfire');
 
 if ($form_type === 'edit') {
     $read_only = FALSE;
+    $xmpp_read_only = ($initialized && !$domain_edit) ? TRUE : FALSE;
     $buttons = array(
         form_submit_update('submit'),
         anchor_cancel('/app/openfire/settings'),
     );
 } else {
     $read_only = TRUE;
+    $xmpp_read_only = TRUE;
     $buttons = array(
         anchor_edit('/app/openfire/settings/edit')
     );
@@ -108,12 +110,18 @@ if (empty($admins)) {
     echo form_header(lang('base_settings'));
 
     echo field_simple_dropdown('admin', $admins, $admin, lang('base_administrator'), $read_only);
-    echo field_input('domain', $domain, lang('openfire_xmpp_domain'), $read_only);
     echo field_input('fqdn', $fqdn, lang('openfire_server_hostname_fqdn'), $read_only);
+    echo field_input('domain', $domain, lang('openfire_xmpp_domain'), $xmpp_read_only);
     echo field_button_set($buttons);
 
     echo form_footer();
     echo form_close();
+
+    if (($form_type == 'edit') && !$domain_edit) {
+        echo infobox_warning(lang('openfire_xmpp_domain'), lang('openfire_change_xmpp_help') . '<br><br>' .
+            anchor_custom('?domain_edit=yes', lang('openfire_let_me_change_xmpp'))
+        );
+    }
 }
 
 echo "</div>";
