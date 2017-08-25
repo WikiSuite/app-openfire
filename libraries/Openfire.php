@@ -174,7 +174,6 @@ class Openfire extends Daemon
      * Returns XMPP fully-qualified domain name.
      *
      * @param boolean $return_default return a default value if XMPP FQDN is not set
-     8
      * @return string XMPP domain
      * @throws Engine_Exception
      */
