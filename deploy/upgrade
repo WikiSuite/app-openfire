@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Run LDAP sync on an upgrade
+/var/clearos/events/openldap_configuration/openfire

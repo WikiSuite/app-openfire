@@ -91,7 +91,7 @@
     <groupDescriptionField>description</groupDescriptionField>
     <groupMemberField>member</groupMemberField>
     <groupNameField>cn</groupNameField>
-    <groupSearchFilter>(objectClass=groupOfNames)</groupSearchFilter>
+    <groupSearchFilter><![CDATA[(&(objectClass=groupOfNames)(gidNumber<=100000)(!(cn=*_plugin)))]]></groupSearchFilter>
     <host>127.0.0.1</host>
     <ldapDebugEnabled>false</ldapDebugEnabled>
     <nameField>cn</nameField>

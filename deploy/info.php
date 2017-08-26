@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'openfire';
-$app['version'] = '1.1.4';
+$app['version'] = '1.1.5';
 $app['release'] = '1';
 $app['vendor'] = 'WikiSuite';
 $app['packager'] = 'eGloo';
@@ -53,7 +53,7 @@ $app['core_requires'] = array(
     'app-network-core',
     'app-openfire-plugin-core',
     'app-system-database-core >= 1:2.3.3',
-    'openfire',
+    'openfire >= 4.1.5',
 );
 
 $app['core_directory_manifest'] = array(

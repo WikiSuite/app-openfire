@@ -1,7 +1,7 @@
 
 Name: app-openfire
 Epoch: 1
-Version: 1.1.4
+Version: 1.1.5
 Release: 1%{dist}
 Summary: Openfire
 License: GPLv3
@@ -27,7 +27,7 @@ Requires: app-ldap-core
 Requires: app-network-core
 Requires: app-openfire-plugin-core
 Requires: app-system-database-core >= 1:2.3.3
-Requires: openfire
+Requires: openfire >= 4.1.5
 
 %description core
 Openfire is a real time collaboration (RTC) server licensed under the Open Source Apache License. It uses the only widely adopted open protocol for instant messaging, XMPP (also called Jabber). Openfire is incredibly easy to setup and administer, but offers rock-solid security and performance.

@@ -354,6 +354,7 @@ class Openfire extends Daemon
         $this->_set_property('ldap.searchFilter', $search_filter);
         $this->_set_property('ldap.adminDN', $admin_dn);
         $this->_set_property('ldap.adminPassword', $bind_pw);
+        $this->_set_property('ldap.groupSearchFilter', '(&(objectClass=groupOfNames)(gidNumber<=100000)(!(cn=*_plugin)))');
         $this->_set_property('provider.auth.className', 'org.jivesoftware.openfire.ldap.LdapAuthProvider');
 
         // Update adminDN and adminPassword via openfire.xml
