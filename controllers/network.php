@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Openfire controller.
+ * Openfire network check controller.
  *
  * @category   apps
  * @package    openfire
  * @subpackage controllers
- * @author     Marc Laporte
- * @copyright  2016 Marc Laporte
+ * @author     eGloo <developer@egloo.ca>
+ * @copyright  2017 Marc Laporte
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       https://github.com/eglooca/app-openfire
  */
@@ -30,65 +30,50 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
+// B O O T S T R A P
+///////////////////////////////////////////////////////////////////////////////
+
+$bootstrap = getenv('CLEAROS_BOOTSTRAP') ? getenv('CLEAROS_BOOTSTRAP') : '/usr/clearos/framework/shared';
+require_once $bootstrap . '/bootstrap.php';
+
+///////////////////////////////////////////////////////////////////////////////
+// D E P E N D E N C I E S
+///////////////////////////////////////////////////////////////////////////////
+
+require clearos_app_base('network') . '/controllers/network_check.php';
+
+///////////////////////////////////////////////////////////////////////////////
 // C L A S S
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * Openfire controller.
+ * Openfire network check controller.
  *
  * @category   apps
  * @package    openfire
  * @subpackage controllers
- * @author     Marc Laporte
- * @copyright  2016 Marc Laporte
+ * @author     eGloo <developer@egloo.ca>
+ * @copyright  2017 Marc Laporte
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       https://github.com/eglooca/app-openfire
  */
 
-class Openfire extends ClearOS_Controller
+class Network extends Network_Check
 {
     /**
-     * Openfire default controller.
-     *
-     * @return view
+     * Network check constructor.
      */
 
-    function index()
+    function __construct()
     {
-        // Show account status widget if we're not in a happy state
-        //---------------------------------------------------------
-
-        $this->load->module('accounts/status');
-
-        if ($this->status->unhappy()) {
-            $this->status->widget('users');
-            return;
-        }
-
-        // Load dependencies
-        //------------------
-
-        $this->load->library('openfire/Openfire');
         $this->lang->load('openfire');
 
-        // Load view data
-        //---------------
-
-        try {
-            $initialized = $this->openfire->is_initialized();
-        } catch (Exception $e) {
-            $this->page->view_exception($e);
-            return;
-        }
-
-        // Load views
-        //-----------
-
-        if ($initialized) {
-            $views = array('openfire/server', 'openfire/network', 'openfire/settings', 'openfire/policy');
-            $this->page->view_forms($views, lang('openfire_app_name'));
-        } else {
-            redirect('/openfire/settings/edit');
-        }
+        $rules = [
+            [ 'name' => lang('openfire_xmpp_client'), 'protocol' => 'TCP', 'port' => 5222 ],
+            [ 'name' => lang('openfire_xmpp_ssl_client'), 'protocol' => 'TCP', 'port' => 5223 ],
+            [ 'name' => lang('openfire_admin_console'), 'protocol' => 'TCP', 'port' => 8080 ],
+        ];
+        
+        parent::__construct('openfire', $rules);
     }
 }

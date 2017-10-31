@@ -24,7 +24,7 @@ Requires: app-base-core
 Requires: app-users-core >= 1:2.3.23
 Requires: app-groups-core
 Requires: app-ldap-core
-Requires: app-network-core
+Requires: app-network-core >= 1:2.4.3
 Requires: app-openfire-plugin-core
 Requires: app-system-database-core >= 1:2.3.3
 Requires: openfire >= 4.1.5

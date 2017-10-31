@@ -14,3 +14,5 @@ $lang['openfire_no_users_exist'] = 'Openfire requires an administrator, so at le
 $lang['openfire_server_hostname_fqdn'] = 'Server Hostname (FQDN)';
 $lang['openfire_change_xmpp_help'] = 'Changing the XMPP Domain after initialization should only be done with extreme caution.  Click on the button below to allow changes.';
 $lang['openfire_let_me_change_xmpp'] = 'Yes, enable XMPP Domain changes';
+$lang['openfire_xmpp_client'] = 'XMPP Client';
+$lang['openfire_xmpp_ssl_client'] = 'XMPP SSL Client';
