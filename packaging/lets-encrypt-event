@@ -1,0 +1,3 @@
+#!/bin/sh
+
+# logger -p local6.notice -t openfire 'updating SSL certificates (test)'

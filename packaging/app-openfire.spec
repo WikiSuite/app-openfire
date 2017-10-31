@@ -1,7 +1,7 @@
 
 Name: app-openfire
 Epoch: 1
-Version: 1.1.5
+Version: 1.1.6
 Release: 1%{dist}
 Summary: Openfire
 License: GPLv3
@@ -21,6 +21,7 @@ Summary: Openfire - Core
 License: LGPLv3
 Group: ClearOS/Libraries
 Requires: app-base-core
+Requires: app-certificate-manager-core >= 1:2.4.5
 Requires: app-users-core >= 1:2.3.23
 Requires: app-groups-core
 Requires: app-ldap-core
@@ -45,6 +46,7 @@ cp -r * %{buildroot}/usr/clearos/apps/openfire/
 install -d -m 0755 %{buildroot}/var/clearos/openfire
 install -d -m 0755 %{buildroot}/var/clearos/openfire/backup
 install -d -m 0755 %{buildroot}/var/clearos/openfire/focus-user
+install -D -m 0755 packaging/lets-encrypt-event %{buildroot}/var/clearos/events/lets_encrypt/openfire
 install -D -m 0644 packaging/openfire.php %{buildroot}/var/clearos/base/daemon/openfire.php
 install -D -m 0755 packaging/openldap-configuration-event %{buildroot}/var/clearos/events/openldap_configuration/openfire
 install -D -m 0755 packaging/openldap-online-event %{buildroot}/var/clearos/events/openldap_online/openfire
@@ -93,6 +95,7 @@ exit 0
 /usr/clearos/apps/openfire/deploy
 /usr/clearos/apps/openfire/language
 /usr/clearos/apps/openfire/libraries
+/var/clearos/events/lets_encrypt/openfire
 /var/clearos/base/daemon/openfire.php
 /var/clearos/events/openldap_configuration/openfire
 /var/clearos/events/openldap_online/openfire

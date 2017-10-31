@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'openfire';
-$app['version'] = '1.1.5';
+$app['version'] = '1.1.6';
 $app['release'] = '1';
 $app['vendor'] = 'WikiSuite';
 $app['packager'] = 'eGloo';
@@ -47,6 +47,7 @@ $app['controllers']['policy']['title'] = lang('base_app_policy');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['core_requires'] = array(
+    'app-certificate-manager-core >= 1:2.4.5',
     'app-users-core >= 1:2.3.23',
     'app-groups-core',
     'app-ldap-core',
@@ -70,6 +71,10 @@ $app['core_file_manifest'] = array(
     ),
     'openldap-online-event'=> array(
         'target' => '/var/clearos/events/openldap_online/openfire',
+        'mode' => '0755'
+    ),
+    'lets-encrypt-event'=> array(
+        'target' => '/var/clearos/events/lets_encrypt/openfire',
         'mode' => '0755'
     ),
 );
