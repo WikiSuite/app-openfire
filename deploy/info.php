@@ -54,7 +54,7 @@ $app['core_requires'] = array(
     'app-network-core >= 1:2.4.3',
     'app-openfire-plugin-core',
     'app-system-database-core >= 1:2.3.3',
-    'openfire >= 4.1.5',
+    'openfire >= 4.1.6',
 );
 
 $app['core_directory_manifest'] = array(
