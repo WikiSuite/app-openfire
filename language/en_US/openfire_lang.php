@@ -16,3 +16,4 @@ $lang['openfire_change_xmpp_help'] = 'Changing the XMPP Domain after initializat
 $lang['openfire_let_me_change_xmpp'] = 'Yes, enable XMPP Domain changes';
 $lang['openfire_xmpp_client'] = 'XMPP Client';
 $lang['openfire_xmpp_ssl_client'] = 'XMPP SSL Client';
+$lang['openfire_meetings'] = 'Openfire Meetings';
