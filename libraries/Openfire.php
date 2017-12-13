@@ -329,10 +329,6 @@ class Openfire extends Daemon
         $hostname = new Hostname();
         $xmpp_fqdn = $hostname->get_internet_hostname();
         $this->_set_property(self::PROPERTY_XMPP_FQDN, $xmpp_fqdn);
-
-        $domain = new Domain();
-        $xmpp_domain = $domain->get_default();
-        $this->set_xmpp_domain($xmpp_domain);
     }
 
     /**
