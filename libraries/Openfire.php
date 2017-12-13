@@ -48,6 +48,7 @@ require_once $bootstrap . '/bootstrap.php';
 
 clearos_load_language('openfire');
 clearos_load_language('network');
+clearos_load_language('certificate_manager');
 
 ///////////////////////////////////////////////////////////////////////////////
 // D E P E N D E N C I E S
@@ -113,10 +114,13 @@ class Openfire extends Daemon
     const APP_BASENAME = 'openfire';
     const FILE_CONFIG = '/usr/share/openfire/conf/openfire.xml';
     const FILE_SECURITY_CONFIG = '/usr/share/openfire/conf/security.xml';
+    const PATH_HOTDEPLOY = '/usr/share/openfire/resources/security/hotdeploy';
     const PROPERTY_ADMINS = 'admin.authorizedJIDs';
     const PROPERTY_XMPP_DOMAIN = 'xmpp.domain';
     const PROPERTY_XMPP_FQDN = 'xmpp.fqdn';
     const DEFAULT_OFMEET_USER = 'focus';
+    const OPENFIRE_USER = 'openfire';
+    const OPENFIRE_GROUP = 'openfire';
 
     ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
@@ -308,6 +312,28 @@ class Openfire extends Daemon
 
         $certificate_manager = new Certificate_Manager();
         $certificate_manager->register([$certificate], 'openfire', lang('openfire_app_name'));
+
+        // FIXME: only do this if certificate has changed
+        $details = $certificate_manager->get_certificate($certificate);
+
+        $cert_files = ['certificate-filename', 'key-filename'];
+
+        foreach ($cert_files as $cert_file) {
+            $source = $details[$cert_file];
+            $basename = basename($source);
+            $destination = self::PATH_HOTDEPLOY . '/' . $cert_file . '.pem';
+
+            $destination_file = new File($destination);
+
+            if ($destination_file->exists())
+                $destination_file->delete();
+
+            $file = new File($source);
+            $file->copy_to($destination);
+
+            $destination_file->chown(self::OPENFIRE_USER, self::OPENFIRE_GROUP);
+            $destination_file->chmod('0660');
+        }
     }
 
     /**
@@ -477,7 +503,7 @@ class Openfire extends Daemon
         $certificates = $certificate_manager->get_certificates();
 
         if (!array_key_exists($certificate, $certificates))
-            return lang('base_parameter_invalid');
+            return lang('certificate_manager_certificate_invalid');
     }
 
     /**
