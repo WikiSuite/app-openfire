@@ -65,6 +65,16 @@ class Openfire extends ClearOS_Controller
             return;
         }
 
+        // Show Certificate Manager widget if it is not initialized
+        //---------------------------------------------------------
+
+        $this->load->module('certificate_manager/certificate_status');
+
+        if (!$this->certificate_status->is_initialized()) {
+            $this->certificate_status->widget();
+            return;
+        }
+
         // Load dependencies
         //------------------
 

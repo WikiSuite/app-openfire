@@ -102,6 +102,7 @@ class Settings extends ClearOS_Controller
         $this->form_validation->set_policy('admin', 'openfire/Openfire', 'validate_username');
         $this->form_validation->set_policy('domain', 'openfire/Openfire', 'validate_xmpp_domain', TRUE);
         $this->form_validation->set_policy('fqdn', 'openfire/Openfire', 'validate_xmpp_fqdn', TRUE);
+        $this->form_validation->set_policy('certificate', 'openfire/Openfire', 'validate_certificate', TRUE);
         $form_ok = $this->form_validation->run();
 
         // Handle form submit
@@ -113,6 +114,7 @@ class Settings extends ClearOS_Controller
                 $this->openfire->set_xmpp_fqdn($this->input->post('fqdn'));
                 $this->openfire->set_xmpp_domain($this->input->post('domain'));
                 $this->openfire->set_admin($this->input->post('admin'));
+                $this->openfire->set_certificate($this->input->post('certificate'));
 
                 // A bit hacky, but add/update ofmeet user at this point too
                 $this->openfire->update_ofmeet_properties();
@@ -138,6 +140,9 @@ class Settings extends ClearOS_Controller
             $data['domain'] = $this->openfire->get_xmpp_domain();
             $data['fqdn'] = $this->openfire->get_xmpp_fqdn();
             $data['initialized'] = $this->openfire->is_initialized();
+            $data['certificate'] = $this->openfire->get_digital_certificate();
+            $data['certificates'] = $this->openfire->get_digital_certificates();
+
             $data['domain_edit'] = (empty($_REQUEST['domain_edit'])) ? FALSE : TRUE;
         } catch (Exception $e) {
             $this->page->view_exception($e);

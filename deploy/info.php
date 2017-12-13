@@ -47,14 +47,14 @@ $app['controllers']['policy']['title'] = lang('base_app_policy');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['core_requires'] = array(
-    'app-certificate-manager-core >= 1:2.4.5',
+    'app-certificate-manager-core >= 1:2.4.15',
     'app-users-core >= 1:2.3.23',
     'app-groups-core',
     'app-ldap-core',
     'app-network-core >= 1:2.4.3',
     'app-openfire-plugin-core',
     'app-system-database-core >= 1:2.3.3',
-    'openfire >= 4.1.6',
+    'openfire >= 4.2.0',
 );
 
 $app['core_directory_manifest'] = array(

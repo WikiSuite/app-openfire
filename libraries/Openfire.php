@@ -58,6 +58,7 @@ clearos_load_language('network');
 
 use \clearos\apps\base\Daemon as Daemon;
 use \clearos\apps\base\File as File;
+use \clearos\apps\certificate_manager\Certificate_Manager as Certificate_Manager;
 use \clearos\apps\groups\Group_Factory as Group_Factory;
 use \clearos\apps\ldap\LDAP_Factory as LDAP_Factory;
 use \clearos\apps\network\Domain as Domain;
@@ -68,6 +69,7 @@ use \clearos\apps\users\User_Factory as User_Factory;
 
 clearos_load_library('base/Daemon');
 clearos_load_library('base/File');
+clearos_load_library('certificate_manager/Certificate_Manager');
 clearos_load_library('groups/Group_Factory');
 clearos_load_library('ldap/LDAP_Factory');
 clearos_load_library('network/Domain');
@@ -106,6 +108,7 @@ class Openfire extends Daemon
     ///////////////////////////////////////////////////////////////////////////////
 
     const DATABASE = 'openfire';
+    const APP_BASENAME = 'openfire';
     const FILE_CONFIG = '/usr/share/openfire/conf/openfire.xml';
     const FILE_SECURITY_CONFIG = '/usr/share/openfire/conf/security.xml';
     const PROPERTY_ADMINS = 'admin.authorizedJIDs';
@@ -145,6 +148,40 @@ class Openfire extends Daemon
         $username_only = preg_replace('/@.*/', '', $first_match);
 
         return $username_only;
+    }
+
+    /**
+     * Returns configured digital certificate.
+     *
+     * @return string basename of digital certificate
+     * @throws Engine_Exception
+     */
+
+    public function get_digital_certificate()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $certificate_manager = new Certificate_Manager();
+        $registered = $certificate_manager->get_registered_certificate(self::APP_BASENAME);
+
+        return $registered;
+    }
+
+    /**
+     * Returns list of available certificates.
+     *
+     * @return array list of available certificates
+     * @throws Engine_Exception
+     */
+
+    public function get_digital_certificates()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $certificate_manager = new Certificate_Manager();
+        $certs = $certificate_manager->get_list();
+
+        return $certs;
     }
 
     /**
@@ -254,6 +291,22 @@ class Openfire extends Daemon
         $this->_set_property(self::PROPERTY_ADMINS, $username);
     }
 
+    /**
+     * Sets the digital certificate.
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function set_certificate($certificate)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        Validation_Exception::is_valid($this->validate_certificate($certificate));
+
+        $certificate_manager = new Certificate_Manager();
+        $certificate_manager->register([$certificate], 'openfire', lang('openfire_app_name'));
+    }
 
     /**
      * Sets install defaults.
@@ -409,6 +462,25 @@ class Openfire extends Daemon
     ///////////////////////////////////////////////////////////////////////////////
     // V A L I D A T I O N  M E T H O D S 
     ///////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Validation routine for digital certificates.
+     *
+     * @param string $certificate basename of digital certificate
+     *
+     * @return string error message if certificate is invalid
+     */
+
+    public function validate_certificate($certificate)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $certificate_manager = new Certificate_Manager();
+        $certificates = $certificate_manager->get_certificates();
+
+        if (!array_key_exists($certificate, $certificates))
+            return lang('base_parameter_invalid');
+    }
 
     /**
      * Validation routine for XMPP domain.

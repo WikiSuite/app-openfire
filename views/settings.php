@@ -7,7 +7,7 @@
  * @package    openfire
  * @subpackage views
  * @author     Marc Laporte
- * @copyright  2016 Marc Laporte
+ * @copyright  2016-2017 Marc Laporte
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       https://github.com/eglooca/app-openfire
  */
@@ -35,6 +35,7 @@
 
 $this->lang->load('base');
 $this->lang->load('openfire');
+$this->lang->load('certificate_manager');
 
 ///////////////////////////////////////////////////////////////////////////////
 // Form handler
@@ -110,6 +111,8 @@ if (empty($admins)) {
     echo form_header(lang('base_settings'));
 
     echo field_simple_dropdown('admin', $admins, $admin, lang('base_administrator'), $read_only);
+    echo field_dropdown('certificate', $certificates, $certificate, lang('certificate_manager_digital_certificate'), $read_only);
+
     echo field_input('fqdn', $fqdn, lang('openfire_server_hostname_fqdn'), $read_only);
     echo field_input('domain', $domain, lang('openfire_xmpp_domain'), $xmpp_read_only);
     echo field_button_set($buttons);

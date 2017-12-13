@@ -21,14 +21,14 @@ Summary: Openfire - Core
 License: LGPLv3
 Group: ClearOS/Libraries
 Requires: app-base-core
-Requires: app-certificate-manager-core >= 1:2.4.5
+Requires: app-certificate-manager-core >= 1:2.4.15
 Requires: app-users-core >= 1:2.3.23
 Requires: app-groups-core
 Requires: app-ldap-core
 Requires: app-network-core >= 1:2.4.3
 Requires: app-openfire-plugin-core
 Requires: app-system-database-core >= 1:2.3.3
-Requires: openfire >= 4.1.6
+Requires: openfire >= 4.2.0
 
 %description core
 Openfire is a real time collaboration (RTC) server licensed under the Open Source Apache License. It uses the only widely adopted open protocol for instant messaging, XMPP (also called Jabber). Openfire is incredibly easy to setup and administer, but offers rock-solid security and performance.
