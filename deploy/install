@@ -12,14 +12,14 @@ sleep 1
 #--------------------------
 
 if [ -e /usr/share/openfire/conf/openfire.xml ]; then
-    logger -p local6.notice -t installer "app-openfire-core - setting default configuration"
+    logger -p local6.notice -t installer "app-openfire - setting default configuration"
     cp /usr/share/openfire/conf/openfire.xml /var/clearos/openfire/backup/openfire.xml.$TIMESTAMP
 fi
 
 cp /usr/clearos/apps/openfire/deploy/openfire.xml /usr/share/openfire/conf/openfire.xml
 
 if [ -e /usr/share/openfire/conf/security.xml ]; then
-    logger -p local6.notice -t installer "app-openfire-core - setting default security configuration"
+    logger -p local6.notice -t installer "app-openfire - setting default security configuration"
     cp /usr/share/openfire/conf/security.xml /var/clearos/openfire/backup/security.xml.$TIMESTAMP
 fi
 
@@ -33,10 +33,10 @@ cp /usr/clearos/apps/openfire/deploy/security.xml /usr/share/openfire/conf/secur
 # Set default start/boot
 #-----------------------
 
-logger -p local6.notice -t installer "app-openfire-core - enabling Openfire server"
+logger -p local6.notice -t installer "app-openfire - enabling Openfire server"
 chkconfig openfire on >/dev/null 2>&1
 
-logger -p local6.notice -t installer "app-openfire-core - starting Openfire server"
+logger -p local6.notice -t installer "app-openfire - starting Openfire server"
 service openfire start >/dev/null 2>&1
 
 # Set properties (must be after start)

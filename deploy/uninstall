@@ -1,0 +1,60 @@
+#!/bin/sh
+
+TIMESTAMP=`date "+%b-%d-%Y-%T"`
+
+# Clean up on an un-install
+#--------------------------
+
+BASE_DIR="/usr/share/openfire"
+BACKUP_DIR="/var/clearos/openfire/backup/$TIMESTAMP"
+MYSQL="/usr/clearos/sandbox/usr/bin/mysql"
+MYSQLADMIN="/usr/clearos/sandbox/usr/bin/mysqladmin"
+MYSQLDUMP="/usr/clearos/sandbox/usr/bin/mysqldump"
+DB_CONFIG="/var/clearos/system_database/root"
+
+mkdir -p "$BACKUP_DIR"
+
+# Backup and remove database
+#---------------------------
+
+ROOTPASS=`grep ^password $DB_CONFIG 2>/dev/null | sed "s/^password[[:space:]]*=[[:space:]]*//"`
+
+$MYSQL -uroot -p"$ROOTPASS" -e 'status;' openfire >/dev/null 2>&1
+
+if [ $? -eq 0 ]; then
+    logger -p local6.notice -t installer "app-openfire - archiving database"
+    $MYSQLDUMP -uroot -p"$ROOTPASS" openfire | gzip > "$BACKUP_DIR/openfire.db.gz"
+    $MYSQLADMIN -uroot -p"$ROOTPASS" -f drop openfire >/dev/null 2>&1
+fi
+
+# Backup XML configuration files
+#-------------------------------
+
+mkdir -p $BACKUP_DIR/config
+
+CONFIGS="available-plugins.xml server-update.xml"
+
+for CONFIG in $CONFIGS; do
+    if [ -e "$BASE_DIR/conf/$CONFIG" ]; then
+        logger -p local6.notice -t installer "app-openfire - archiving configuration: $CONFIG"
+        mv $BASE_DIR/conf/$CONFIG $BACKUP_DIR/config
+    fi
+done
+
+# Clean up emtpy directories
+#---------------------------
+
+[ -d "$BASE_DIR/index" ] && rmdir "$BASE_DIR/index" 2>/dev/null
+[ -d "$BASE_DIR/fastpath" ] && rmdir "$BASE_DIR/fastpath" 2>/dev/null
+
+# Clean up default plugins
+#-------------------------
+
+PLUGINS="certificatemanager fastpath offocus ofmeet search"
+
+for PLUGIN in $PLUGINS; do
+    if [ -e "$BASE_DIR/plugins/$PLUGIN" ]; then
+        logger -p local6.notice -t installer "app-openfire - removing extracted plugin: $PLUGIN"
+        rm -rf "$BASE_DIR/plugins/$PLUGIN" 2>/dev/null
+    fi
+done
