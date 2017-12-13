@@ -66,6 +66,7 @@ use \clearos\apps\network\Hostname as Hostname;
 use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\system_database\System_Database as System_Database;
 use \clearos\apps\users\User_Factory as User_Factory;
+use \clearos\apps\users\User_Utilities as User_Utilities;
 
 clearos_load_library('base/Daemon');
 clearos_load_library('base/File');
@@ -77,6 +78,7 @@ clearos_load_library('network/Hostname');
 clearos_load_library('network/Network_Utils');
 clearos_load_library('system_database/System_Database');
 clearos_load_library('users/User_Factory');
+clearos_load_library('users/User_Utilities');
 
 // Exceptions
 //-----------
@@ -114,7 +116,7 @@ class Openfire extends Daemon
     const PROPERTY_ADMINS = 'admin.authorizedJIDs';
     const PROPERTY_XMPP_DOMAIN = 'xmpp.domain';
     const PROPERTY_XMPP_FQDN = 'xmpp.fqdn';
-    const DEFAULT_OFMEET_USER = 'openfire-focus';
+    const DEFAULT_OFMEET_USER = 'focus';
 
     ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
@@ -433,7 +435,7 @@ class Openfire extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $password = 'FIXME12333';
+        $password = User_Utilities::generate_password();
         $xmpp_domain = $this->get_xmpp_domain();
 
         $this->_set_property('org.jitsi.videobridge.ofmeet.focus.user.jid', self::DEFAULT_OFMEET_USER .  '@' . $xmpp_domain);
@@ -446,7 +448,7 @@ class Openfire extends Daemon
         } else {
             clearos_log('openfire', 'creating focus user');
             $user_info['core']['first_name'] = 'Openfire';
-            $user_info['core']['last_name'] = 'Focus';
+            $user_info['core']['last_name'] = 'Focus User';
             $user_info['core']['type'] = 'built-in';
             $user_info['core']['home_directory'] = '/var/clearos/openfire/focus-user';
 
