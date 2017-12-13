@@ -120,7 +120,7 @@ if (empty($admins)) {
     echo form_footer();
     echo form_close();
 
-    if (($form_type == 'edit') && !$domain_edit) {
+    if (($form_type == 'edit') && !$domain_edit && $initialized) {
         echo infobox_warning(lang('openfire_xmpp_domain'), lang('openfire_change_xmpp_help') . '<br><br>' .
             anchor_custom('?domain_edit=yes', lang('openfire_let_me_change_xmpp'))
         );
