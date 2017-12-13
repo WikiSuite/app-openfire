@@ -134,7 +134,7 @@ class Settings extends ClearOS_Controller
 
         try {
             $data['form_type'] = $form_type;
-            $data['admin_url'] = 'http://' . $_SERVER['SERVER_NAME'] . ':9090/';
+            $data['admin_url'] = 'https://' . $_SERVER['SERVER_NAME'] . ':9091/';
             $data['admins'] = $this->openfire->get_possible_admins();
             $data['admin'] = $this->openfire->get_admin();
             $data['domain'] = $this->openfire->get_xmpp_domain();

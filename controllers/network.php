@@ -72,7 +72,7 @@ class Network extends Network_Check
             [ 'name' => lang('openfire_xmpp_client'), 'protocol' => 'TCP', 'port' => 5222 ],
             [ 'name' => lang('openfire_xmpp_ssl_client'), 'protocol' => 'TCP', 'port' => 5223 ],
             [ 'name' => lang('openfire_meetings'), 'protocol' => 'TCP', 'port' => 7443 ],
-            [ 'name' => lang('openfire_admin_console'), 'protocol' => 'TCP', 'port' => 9090 ],
+            [ 'name' => lang('openfire_admin_console'), 'protocol' => 'TCP', 'port' => 9091 ],
         ];
         
         parent::__construct('openfire', $rules);
