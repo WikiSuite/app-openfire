@@ -77,8 +77,7 @@ echo "<div id='openfire_not_running' style='display:none;'>";
 
 echo infobox_warning(
     lang('openfire_admin_console'),
-    lang('openfire_admin_console_not_running_help'),
-    $options
+    lang('openfire_admin_console_not_running_help')
 );
 
 echo "</div>";
