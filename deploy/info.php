@@ -47,7 +47,7 @@ $app['controllers']['policy']['title'] = lang('base_app_policy');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['core_requires'] = array(
-    'app-certificate-manager-core >= 1:2.4.15',
+    'app-certificate-manager-core >= 1:2.4.16',
     'app-users-core >= 1:2.3.23',
     'app-groups-core',
     'app-ldap-core',
