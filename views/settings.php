@@ -109,10 +109,10 @@ if (empty($admins)) {
     echo form_open('openfire/settings/edit');
     echo form_header(lang('base_settings'));
 
+    // FIXME: change "Secure Network" language tag - buildsys is down right now
     echo field_simple_dropdown('admin', $admins, $admin, lang('base_administrator'), $read_only);
-    echo field_dropdown('certificate', $certificates, $certificate, lang('certificate_manager_digital_certificate'), $read_only);
+    echo field_dropdown('hostname', $hostnames, $hostname, 'Secure Hostname', $read_only);
 
-    echo field_input('fqdn', $fqdn, lang('openfire_server_hostname_fqdn'), $read_only);
     echo field_input('domain', $domain, lang('openfire_xmpp_domain'), $xmpp_read_only);
     echo field_button_set($buttons);
 

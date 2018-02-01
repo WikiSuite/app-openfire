@@ -167,6 +167,8 @@ class Openfire extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
+        // FIXME: push this down into the Certificate Manager (buildsys issue)
+
         $certificate_manager = new Certificate_Manager();
         $registered = $certificate_manager->get_registered_certificate(self::APP_BASENAME);
 
@@ -185,9 +187,9 @@ class Openfire extends Daemon
         clearos_profile(__METHOD__, __LINE__);
 
         $certificate_manager = new Certificate_Manager();
-        $certs = $certificate_manager->get_list();
+        $hostnames = $certificate_manager->get_secure_hostnames();
 
-        return $certs;
+        return $hostnames;
     }
 
     /**
@@ -310,10 +312,12 @@ class Openfire extends Daemon
 
         Validation_Exception::is_valid($this->validate_certificate($certificate));
 
+        // Set certificate information
+        //----------------------------
+
         $certificate_manager = new Certificate_Manager();
         $certificate_manager->register([$certificate], 'openfire', lang('openfire_app_name'));
 
-        // FIXME: only do this if certificate has changed
         $details = $certificate_manager->get_certificate($certificate);
 
         $cert_files = ['certificate-filename', 'key-filename'];

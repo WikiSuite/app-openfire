@@ -58,3 +58,11 @@ for PLUGIN in $PLUGINS; do
         rm -rf "$BASE_DIR/plugins/$PLUGIN" 2>/dev/null
     fi
 done
+
+# Cleanup cert state
+#-------------------
+
+if [ -e /var/clearos/certificate_manager/state/openfire.conf ]; then
+    logger -p local6.notice -t installer "app-openfire - removing certificate manager state"
+    rm -f /var/clearos/certificate_manager/state/openfire.conf
+fi

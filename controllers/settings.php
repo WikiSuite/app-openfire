@@ -7,7 +7,7 @@
  * @package    openfire
  * @subpackage controllers
  * @author     Marc Laporte
- * @copyright  2016 Marc Laporte
+ * @copyright  2017-2018 Marc Laporte
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       https://github.com/eglooca/app-openfire
  */
@@ -40,7 +40,7 @@
  * @package    openfire
  * @subpackage controllers
  * @author     Marc Laporte
- * @copyright  2016 Marc Laporte
+ * @copyright  2017-2018 Marc Laporte
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       https://github.com/eglooca/app-openfire
  */
@@ -101,8 +101,6 @@ class Settings extends ClearOS_Controller
 
         $this->form_validation->set_policy('admin', 'openfire/Openfire', 'validate_username');
         $this->form_validation->set_policy('domain', 'openfire/Openfire', 'validate_xmpp_domain', TRUE);
-        $this->form_validation->set_policy('fqdn', 'openfire/Openfire', 'validate_xmpp_fqdn', TRUE);
-        $this->form_validation->set_policy('certificate', 'openfire/Openfire', 'validate_certificate', TRUE);
         $form_ok = $this->form_validation->run();
 
         // Handle form submit
@@ -110,11 +108,13 @@ class Settings extends ClearOS_Controller
 
         if ($this->input->post('submit') && $form_ok) {
             try {
-                // Ndte: set the domain first since it's needed for setting the admin
-                $this->openfire->set_xmpp_fqdn($this->input->post('fqdn'));
+                // Note: set the certificate/domain first since it's needed for setting the admin
+                $cert_and_hostname = preg_split('/\|/', $this->input->post('hostname'));
+
+                $this->openfire->set_certificate($cert_and_hostname[0]);
+                $this->openfire->set_xmpp_fqdn($cert_and_hostname[1]);
                 $this->openfire->set_xmpp_domain($this->input->post('domain'));
                 $this->openfire->set_admin($this->input->post('admin'));
-                $this->openfire->set_certificate($this->input->post('certificate'));
 
                 // A bit hacky, but add/update ofmeet user at this point too
                 $this->openfire->update_ofmeet_properties();
@@ -134,16 +134,36 @@ class Settings extends ClearOS_Controller
 
         try {
             $data['form_type'] = $form_type;
-            $data['admin_url'] = 'https://' . $_SERVER['SERVER_NAME'] . ':9091/';
+            $data['admin_url'] = 'https://' . $this->openfire->get_xmpp_fqdn() . ':9091/';
             $data['admins'] = $this->openfire->get_possible_admins();
             $data['admin'] = $this->openfire->get_admin();
             $data['domain'] = $this->openfire->get_xmpp_domain();
-            $data['fqdn'] = $this->openfire->get_xmpp_fqdn();
             $data['initialized'] = $this->openfire->is_initialized();
-            $data['certificate'] = $this->openfire->get_digital_certificate();
-            $data['certificates'] = $this->openfire->get_digital_certificates();
-
             $data['domain_edit'] = (empty($_REQUEST['domain_edit'])) ? FALSE : TRUE;
+
+            // TODO: handling the group options is a bit of a manual job.
+            // This should be merged into something better
+
+            $hostname = $this->openfire->get_xmpp_fqdn();
+            $cert = $this->openfire->get_digital_certificate();
+
+            if ($form_type === 'edit') {
+                $data['hostname'] = $cert . '|' . $hostname;
+
+                $hostname_info = $this->openfire->get_digital_certificates();
+
+                foreach ($hostname_info as $cert => $details) {
+                    $list = [];
+                    foreach ($details['hostnames'] as $hostname)
+                        $list[$cert . '|' . $hostname] = $hostname;
+
+                    $data['hostnames'][$details['name']] = $list;
+                }
+            } else {
+                // TODO: the group options doesn't like view-mode.  Hack it in.
+                $data['hostnames'][$hostname] = $hostname;
+                $data['hostname'] = $hostname;
+            }
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
