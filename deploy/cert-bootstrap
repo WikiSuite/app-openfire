@@ -1,0 +1,46 @@
+#!/bin/bash -x
+
+set -e
+
+PRIVKEY=/etc/pki/CA/private/sys-0-key.pem
+CERT=/etc/pki/CA/sys-0-cert.pem
+KEYSTORE=/usr/share/openfire/resources/security/keystore
+PASSWORD=changeit
+
+PKCS12ARCHIVE=/tmp/keystore.p12
+TMPKEYSTORE=/tmp/keystore
+
+# Bail if default certs do not exist
+if ( [ ! -f $PRIVKEY ] || [ ! -f $CERT ] ); then
+    exit 1
+fi
+
+# Tidy up temp files
+[ -f $PKCS12ARCHIVE ] && rm -fv $PKCS12ARCHIVE
+[ -f $TMPKEYSTORE ] && rm -fv $TMPKEYSTORE
+
+# Import certificate data in PKCS12 archive.
+openssl pkcs12 \
+    -export \
+    -out $PKCS12ARCHIVE \
+    -inkey $PRIVKEY \
+    -in $CERT \
+    -password "pass:$PASSWORD"
+
+# Create new Java keystore based on PKCS12 archive.
+keytool -importkeystore \
+    -destkeystore $TMPKEYSTORE \
+    -deststorepass "$PASSWORD" \
+    -srcstoretype PKCS12 \
+    -srcstorepass "$PASSWORD" \
+    -srckeystore $PKCS12ARCHIVE
+
+# Set owner for new file
+chown openfire:openfire $TMPKEYSTORE
+chmod 660 $TMPKEYSTORE
+
+# Backup old Openfire keystore.
+cp $KEYSTORE /var/clearos/openfire/backup/keystore-backup-$(date +%b-%d-%Y-%T)
+
+# Move new store in place.
+mv $TMPKEYSTORE $KEYSTORE
