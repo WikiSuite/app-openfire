@@ -19,7 +19,7 @@
 <jive>
   <adminConsole>
     <!-- Disable either port by setting the value to -1 -->
-    <port>9090</port>
+    <port>-1</port>
     <securePort>9091</securePort>
   </adminConsole>
   <locale>en</locale>
