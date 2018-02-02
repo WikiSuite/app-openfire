@@ -1,4 +1,8 @@
 #!/bin/sh
 
+# Add sudoers
+/usr/sbin/addsudo /usr/bin/keytool app-openfire-core
+
+
 # Run LDAP sync on an upgrade
 /var/clearos/events/openldap_configuration/openfire

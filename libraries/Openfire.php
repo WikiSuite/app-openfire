@@ -59,6 +59,7 @@ clearos_load_language('certificate_manager');
 
 use \clearos\apps\base\Daemon as Daemon;
 use \clearos\apps\base\File as File;
+use \clearos\apps\base\Shell as Shell;
 use \clearos\apps\certificate_manager\Certificate_Manager as Certificate_Manager;
 use \clearos\apps\groups\Group_Factory as Group_Factory;
 use \clearos\apps\ldap\LDAP_Factory as LDAP_Factory;
@@ -71,6 +72,7 @@ use \clearos\apps\users\User_Utilities as User_Utilities;
 
 clearos_load_library('base/Daemon');
 clearos_load_library('base/File');
+clearos_load_library('base/Shell');
 clearos_load_library('certificate_manager/Certificate_Manager');
 clearos_load_library('groups/Group_Factory');
 clearos_load_library('ldap/LDAP_Factory');
@@ -114,6 +116,9 @@ class Openfire extends Daemon
     const APP_BASENAME = 'openfire';
     const FILE_CONFIG = '/usr/share/openfire/conf/openfire.xml';
     const FILE_SECURITY_CONFIG = '/usr/share/openfire/conf/security.xml';
+    const FILE_PKCS12 = '/var/clearos/openfire/keystore.p12';
+    const FILE_KEYSTORE = '/usr/share/openfire/resources/security/keystore';
+    const CONSTANT_KEYSTORE_PW = 'changeit';
     const PATH_HOTDEPLOY = '/usr/share/openfire/resources/security/hotdeploy';
     const PROPERTY_ADMINS = 'admin.authorizedJIDs';
     const PROPERTY_XMPP_DOMAIN = 'xmpp.domain';
@@ -121,6 +126,8 @@ class Openfire extends Daemon
     const DEFAULT_OFMEET_USER = 'focus';
     const OPENFIRE_USER = 'openfire';
     const OPENFIRE_GROUP = 'openfire';
+    const COMMAND_KEYTOOL = '/usr/bin/keytool';
+    const COMMAND_OPENSSL = '/usr/bin/openssl';
 
     ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
@@ -167,10 +174,8 @@ class Openfire extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        // FIXME: push this down into the Certificate Manager (buildsys issue)
-
         $certificate_manager = new Certificate_Manager();
-        $registered = $certificate_manager->get_registered_certificate(self::APP_BASENAME);
+        $registered = $certificate_manager->get_registered_certificate(self::APP_BASENAME, '-');
 
         return $registered;
     }
@@ -312,12 +317,58 @@ class Openfire extends Daemon
 
         Validation_Exception::is_valid($this->validate_certificate($certificate));
 
-        // Set certificate information
-        //----------------------------
+        // Register certificate with Certificate Manager
+        //----------------------------------------------
 
+        $cert_object['-'] = $certificate;
         $certificate_manager = new Certificate_Manager();
-        $certificate_manager->register([$certificate], 'openfire', lang('openfire_app_name'));
+        $certificate_manager->register($cert_object, 'openfire', lang('openfire_app_name'));
 
+        // Import via keytool
+        //-------------------
+
+        $details = $certificate_manager->get_certificate($certificate);
+
+        $shell = new Shell();
+        $shell->execute(
+            self::COMMAND_OPENSSL,
+            'pkcs12 -export ' .
+            '-name ' . $certificate . ' ' .
+            '-out ' . self::FILE_PKCS12 . ' -inkey ' . $details['key-filename']  . ' -in ' . $details['certificate-filename'] . ' ' .
+            '-password "pass:' . self::CONSTANT_KEYSTORE_PW . '"',
+            TRUE
+        );
+
+        try {
+            $options['validate_exit_code'] = FALSE;
+
+            $shell->execute(
+                self::COMMAND_KEYTOOL,
+                '-keystore ' . self::FILE_KEYSTORE . ' ' .
+                '-delete -alias ' . $certificate . ' ' .
+                '-storepass ' . self::CONSTANT_KEYSTORE_PW,
+                TRUE,
+                $options
+            );
+        } catch (\Exception $e) {
+            // Not fatal
+        }
+
+        $shell->execute(
+            self::COMMAND_KEYTOOL,
+            '-importkeystore ' .
+            '-alias ' . $certificate . ' ' .
+            '-destkeystore ' . self::FILE_KEYSTORE . ' ' .
+            '-deststorepass changeit ' .
+            '-destkeypass changeit ' .
+            '-srcstoretype PKCS12 ' .
+            '-srcstorepass changeit ' .
+            '-srckeystore ' . self::FILE_PKCS12,
+            TRUE
+        );
+
+        // TODO: Hotdeploy
+        /*
         $details = $certificate_manager->get_certificate($certificate);
 
         $cert_files = ['certificate-filename', 'key-filename'];
@@ -333,11 +384,12 @@ class Openfire extends Daemon
                 $destination_file->delete();
 
             $file = new File($source);
-            $file->copy_to($destination);
+            $file->copy_to($destination, FALSE);
 
             $destination_file->chown(self::OPENFIRE_USER, self::OPENFIRE_GROUP);
             $destination_file->chmod('0660');
         }
+        */
     }
 
     /**
@@ -488,7 +540,7 @@ class Openfire extends Daemon
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    // V A L I D A T I O N  M E T H O D S 
+    // V A L I D A T I O N  M E T H O D S
     ///////////////////////////////////////////////////////////////////////////////
 
     /**
