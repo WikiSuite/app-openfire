@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'openfire';
-$app['version'] = '1.2.3';
+$app['version'] = '1.2.4';
 $app['release'] = '1';
 $app['vendor'] = 'WikiSuite';
 $app['packager'] = 'eGloo';
@@ -53,7 +53,7 @@ $app['requires'] = array(
 $app['core_requires'] = array(
     'app-base >= 1:2.4.15',
     'app-certificate-manager-core >= 1:2.4.16',
-    'app-users-core >= 1:2.3.23',
+    'app-users-core >= 1:2.4.0',
     'app-groups-core',
     'app-ldap-core',
     'app-network-core >= 1:2.4.3',

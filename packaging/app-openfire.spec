@@ -1,7 +1,7 @@
 
 Name: app-openfire
 Epoch: 1
-Version: 1.2.3
+Version: 1.2.4
 Release: 1%{dist}
 Summary: Openfire
 License: GPLv3
@@ -24,7 +24,7 @@ Group: ClearOS/Libraries
 Requires: app-base-core
 Requires: app-base >= 1:2.4.15
 Requires: app-certificate-manager-core >= 1:2.4.16
-Requires: app-users-core >= 1:2.3.23
+Requires: app-users-core >= 1:2.4.0
 Requires: app-groups-core
 Requires: app-ldap-core
 Requires: app-network-core >= 1:2.4.3
