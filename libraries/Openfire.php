@@ -328,13 +328,17 @@ class Openfire extends Daemon
         //-------------------
 
         $details = $certificate_manager->get_certificate($certificate);
+        if (array_key_exists('fullchain-filename', $details))
+            $cert_filename = $details['fullchain-filename'];
+        else
+            $cert_filename = $details['certificate-filename'];
 
         $shell = new Shell();
         $shell->execute(
             self::COMMAND_OPENSSL,
             'pkcs12 -export ' .
             '-name ' . $certificate . ' ' .
-            '-out ' . self::FILE_PKCS12 . ' -inkey ' . $details['key-filename']  . ' -in ' . $details['certificate-filename'] . ' ' .
+            '-out ' . self::FILE_PKCS12 . ' -inkey ' . $details['key-filename']  . ' -in ' . $cert_filename . ' ' .
             '-password "pass:' . self::CONSTANT_KEYSTORE_PW . '"',
             TRUE
         );
