@@ -147,7 +147,7 @@ class Openfire extends Daemon
     /**
      * Returns the Openfire administrator accounts.
      *
-     * @return array Openfire administrator usernames (without @domain.com)
+     * @return array Openfire administrator usernames (without @example.org)
      * @throws Engine_Exception
      */
 
