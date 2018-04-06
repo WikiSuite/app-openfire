@@ -3,6 +3,7 @@
 $lang['openfire_app_name'] = 'Openfire';
 $lang['openfire_app_description'] = 'Openfire is a real time collaboration (RTC) server licensed under the Open Source Apache License. It uses the only widely adopted open protocol for instant messaging, XMPP (also called Jabber). Openfire is incredibly easy to setup and administer, but offers rock-solid security and performance.';
 $lang['openfire_admin_console'] = 'Openfire Admin Console';
+$lang['openfire_administrators'] = 'Openfire server administrators';
 $lang['openfire_admin_console_help'] = 'Follow the link to access the Openfire Admin Console.';
 $lang['openfire_checking_status'] = 'Checking the status of Openfire...';
 $lang['openfire_go_to_admin_console'] = 'Go To Admin Console';

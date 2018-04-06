@@ -25,8 +25,8 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-//  
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,10 +89,10 @@ echo "</div>";
 echo "<div id='openfire_running' style='display:none;'>";
 
 // Show warning if nobody is an Openfire user or no users exist
-if (empty($admins)) {
+if (empty($possible_admins)) {
     echo infobox_warning(lang('base_warning'), lang('openfire_no_users_exist'));
 } else {
-    if (empty($admin)) {
+    if (empty($current_admins)) {
         echo infobox_warning(lang('base_warning'), lang('openfire_select_admin_and_settings'));
     } else if ($form_type != 'edit') {
         $options['buttons']  = array(
@@ -109,8 +109,9 @@ if (empty($admins)) {
     echo form_open('openfire/settings/edit');
     echo form_header(lang('base_settings'));
 
+    echo field_multiselect_dropdown('admins[]', $possible_admins, $current_admins, lang('openfire_administrators'), TRUE, $read_only);
+
     // FIXME: change "Secure Network" language tag - buildsys is down right now
-    echo field_simple_dropdown('admin', $admins, $admin, lang('base_administrator'), $read_only);
     echo field_dropdown('hostname', $hostnames, $hostname, 'Secure Hostname', $read_only);
 
     echo field_input('domain', $domain, lang('openfire_xmpp_domain'), $xmpp_read_only);

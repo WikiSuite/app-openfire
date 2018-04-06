@@ -114,7 +114,7 @@ class Settings extends ClearOS_Controller
                 $this->openfire->set_certificate($cert_and_hostname[0]);
                 $this->openfire->set_xmpp_fqdn($cert_and_hostname[1]);
                 $this->openfire->set_xmpp_domain($this->input->post('domain'));
-                $this->openfire->set_admin($this->input->post('admin'));
+                $this->openfire->set_admins($this->input->post('admins'));
 
                 // A bit hacky, but add/update ofmeet user at this point too
                 $this->openfire->update_ofmeet_properties();
@@ -135,8 +135,8 @@ class Settings extends ClearOS_Controller
         try {
             $data['form_type'] = $form_type;
             $data['admin_url'] = 'https://' . $this->openfire->get_xmpp_fqdn() . ':9091/';
-            $data['admins'] = $this->openfire->get_possible_admins();
-            $data['admin'] = $this->openfire->get_admin();
+            $data['possible_admins'] = $this->openfire->get_possible_admins();
+            $data['current_admins'] = $this->openfire->get_current_admins();
             $data['domain'] = $this->openfire->get_xmpp_domain();
             $data['initialized'] = $this->openfire->is_initialized();
             $data['domain_edit'] = (empty($_REQUEST['domain_edit'])) ? FALSE : TRUE;

@@ -145,22 +145,21 @@ class Openfire extends Daemon
     }
 
     /**
-     * Returns the Openfire administrator account.
+     * Returns the Openfire administrator accounts.
      *
-     * @return string Openfire administrator account
+     * @return array Openfire administrator usernames (without @domain.com)
      * @throws Engine_Exception
      */
 
-    public function get_admin()
+    public function get_current_admins()
     {
         clearos_profile(__METHOD__, __LINE__);
 
         $list = $this->_get_property(self::PROPERTY_ADMINS);
-
-        $first_match = preg_replace('/,.*/', '', $list);
-        $username_only = preg_replace('/@.*/', '', $first_match);
-
-        return $username_only;
+        $matches = [];
+        preg_match_all('/(?:(?P<username>[a-zA-Z0-9_.+-]+)@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)/', $list, $matches);
+        $usernames = $matches['username'];
+        return $usernames;
     }
 
     /**
@@ -288,20 +287,24 @@ class Openfire extends Daemon
     /**
      * Sets the Openfire administrator account.
      *
+     * @param array usernames Array of username without the domain part
      * @return void
      * @throws Engine_Exception
      */
 
-    public function set_admin($username)
+    public function set_admins($usernames)
     {
         clearos_profile(__METHOD__, __LINE__);
 
         // Validation_Exception::is_valid($this->validate_username($username));
-
         $domain = $this->get_xmpp_domain();
-        $username = $username . '@' . $domain;
 
-        $this->_set_property(self::PROPERTY_ADMINS, $username);
+        $add_domain = function($username) use ($domain) {
+            return $username . '@' . $domain;
+        };
+        $full_usernames = array_map($add_domain, $usernames);
+        $openfire_value = implode(', ', $full_usernames);
+        $this->_set_property(self::PROPERTY_ADMINS, $openfire_value);
     }
 
     /**
@@ -434,12 +437,11 @@ class Openfire extends Daemon
 
         $this->_set_property(self::PROPERTY_XMPP_DOMAIN, $domain);
 
-        // The admin ID needs the domain portion replace
-        $admin = $this->get_admin();
-
-        if (!empty($admin)) {
-            $new_admin = preg_replace('/@.*/', '@' . $domain, $admin);
-            $this->set_admin($new_admin);
+        // The admin IDs needs the domain portion replaced
+        $admins = $this->get_current_admins();
+        if (!empty($admins)) {
+            //The following will replace the domain to the one set above as a side-effect
+            $this->set_admins($admins);
         }
 
         // And so does the ofmeet focus user.
