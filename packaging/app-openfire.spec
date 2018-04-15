@@ -5,7 +5,7 @@ Version: 1.2.7
 Release: 1%{dist}
 Summary: Openfire
 License: GPLv3
-Group: ClearOS/Apps
+Group: Applications/Apps
 Packager: eGloo
 Vendor: WikiSuite
 Source: %{name}-%{version}.tar.gz
@@ -18,9 +18,9 @@ Requires: app-certificate-manager
 Openfire is a real time collaboration (RTC) server licensed under the Open Source Apache License. It uses the only widely adopted open protocol for instant messaging, XMPP (also called Jabber). Openfire is incredibly easy to setup and administer, but offers rock-solid security and performance.
 
 %package core
-Summary: Openfire - Core
+Summary: Openfire - API
 License: LGPLv3
-Group: ClearOS/Libraries
+Group: Applications/API
 Requires: app-base-core
 Requires: app-base >= 1:2.4.15
 Requires: app-certificate-manager-core >= 1:2.4.16
