@@ -145,6 +145,30 @@ class Openfire extends Daemon
     }
 
     /**
+     * Returns admin URL.
+     *
+     * @param string $remote_ip IP address of remote client
+     * @param string $server_name name of the server host
+     *
+     * @return string admin URL
+     * @throws Engine_Exception
+     */
+
+    public function get_admin_url($remote_ip = '', $server_name = '')
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (!empty($remote_ip) && !empty($server_name) && Network_Utils::is_private_ip($remote_ip))
+            $hostname = $server_name;
+        else
+            $hostname = $this->get_xmpp_fqdn();
+
+        $url = 'https://' . $hostname . ':9091/';
+
+        return $url;
+    }
+
+    /**
      * Returns the Openfire administrator accounts.
      *
      * @return array Openfire administrator usernames (without @example.org)

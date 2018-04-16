@@ -134,7 +134,7 @@ class Settings extends ClearOS_Controller
 
         try {
             $data['form_type'] = $form_type;
-            $data['admin_url'] = 'https://' . $this->openfire->get_xmpp_fqdn() . ':9091/';
+            $data['admin_url'] = $this->openfire->get_admin_url($_SERVER['REMOTE_ADDR'], $_SERVER['SERVER_NAME']);
             $data['possible_admins'] = $this->openfire->get_possible_admins();
             $data['current_admins'] = $this->openfire->get_current_admins();
             $data['domain'] = $this->openfire->get_xmpp_domain();
