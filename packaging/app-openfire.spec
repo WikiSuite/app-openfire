@@ -1,7 +1,7 @@
 
 Name: app-openfire
 Epoch: 1
-Version: 1.2.7
+Version: 1.2.8
 Release: 1%{dist}
 Summary: Openfire
 License: GPLv3
