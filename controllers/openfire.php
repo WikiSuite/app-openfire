@@ -75,6 +75,24 @@ class Openfire extends ClearOS_Controller
             return;
         }
 
+        // LDAP is required.  No AD support yet
+        // TODO: migrate to a standard widget when available
+        //--------------------------------------------------
+
+        $this->load->library('accounts/accounts_configuration');
+
+        try {
+            $driver = $this->accounts_configuration->get_driver();
+        } catch (Exception $e) {
+            $this->page->view_exception($e);
+            return;
+        }
+
+        if ($driver != 'openldap_directory') {
+            $this->page->view_form('openfire/incompatible', lang('openfire_app_name'));
+            return;
+        }
+
         // Load dependencies
         //------------------
 
@@ -96,7 +114,7 @@ class Openfire extends ClearOS_Controller
 
         if ($initialized) {
             $views = array('openfire/server', 'openfire/network', 'openfire/settings', 'openfire/policy');
-            $this->page->view_forms($views, lang('openfire_app_name'));
+            $this->page->view_controllers($views, lang('openfire_app_name'));
         } else {
             redirect('/openfire/settings/edit');
         }

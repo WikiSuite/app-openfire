@@ -18,3 +18,4 @@ $lang['openfire_let_me_change_xmpp'] = 'Yes, enable XMPP Domain changes';
 $lang['openfire_xmpp_client'] = 'XMPP Client';
 $lang['openfire_xmpp_ssl_client'] = 'XMPP SSL Client';
 $lang['openfire_meetings'] = 'Openfire Meetings';
+$lang['openfire_openfire_incompatible_message'] = 'Sorry, the Openfire app is not compatible with your accounts system.';
