@@ -138,32 +138,10 @@ class Settings extends ClearOS_Controller
             $data['possible_admins'] = $this->openfire->get_possible_admins();
             $data['current_admins'] = $this->openfire->get_current_admins();
             $data['domain'] = $this->openfire->get_xmpp_domain();
+            $data['hostname'] = $this->openfire->get_secure_hostname_key();
+            $data['hostnames'] = $this->openfire->get_secure_hostname_options();
             $data['initialized'] = $this->openfire->is_initialized();
             $data['domain_edit'] = (empty($_REQUEST['domain_edit'])) ? FALSE : TRUE;
-
-            // TODO: handling the group options is a bit of a manual job.
-            // This should be merged into something better
-
-            $hostname = $this->openfire->get_xmpp_fqdn();
-            $cert = $this->openfire->get_digital_certificate();
-
-            if ($form_type === 'edit') {
-                $data['hostname'] = $cert . '|' . $hostname;
-
-                $hostname_info = $this->openfire->get_digital_certificates();
-
-                foreach ($hostname_info as $cert => $details) {
-                    $list = [];
-                    foreach ($details['hostnames'] as $hostname)
-                        $list[$cert . '|' . $hostname] = $hostname;
-
-                    $data['hostnames'][$details['name']] = $list;
-                }
-            } else {
-                // TODO: the group options doesn't like view-mode.  Hack it in.
-                $data['hostnames'][$hostname] = $hostname;
-                $data['hostname'] = $hostname;
-            }
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;

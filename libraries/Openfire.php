@@ -60,7 +60,7 @@ clearos_load_language('certificate_manager');
 use \clearos\apps\base\Daemon as Daemon;
 use \clearos\apps\base\File as File;
 use \clearos\apps\base\Shell as Shell;
-use \clearos\apps\certificate_manager\Certificate_Manager as Certificate_Manager;
+use \clearos\apps\certificate_manager\Certificate_Store as Certificate_Store;
 use \clearos\apps\groups\Group_Factory as Group_Factory;
 use \clearos\apps\ldap\LDAP_Factory as LDAP_Factory;
 use \clearos\apps\network\Domain as Domain;
@@ -73,7 +73,7 @@ use \clearos\apps\users\User_Utilities as User_Utilities;
 clearos_load_library('base/Daemon');
 clearos_load_library('base/File');
 clearos_load_library('base/Shell');
-clearos_load_library('certificate_manager/Certificate_Manager');
+clearos_load_library('certificate_manager/Certificate_Store');
 clearos_load_library('groups/Group_Factory');
 clearos_load_library('ldap/LDAP_Factory');
 clearos_load_library('network/Domain');
@@ -193,14 +193,16 @@ class Openfire extends Daemon
      * @throws Engine_Exception
      */
 
-    public function get_digital_certificate()
+    public function get_secure_hostname_key()
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $certificate_manager = new Certificate_Manager();
-        $registered = $certificate_manager->get_registered_certificate(self::APP_BASENAME, '-');
+        $store = new Certificate_Store();
+        $registered = $store->get(self::APP_BASENAME);
 
-        return $registered;
+        $hostname_key = $registered['type'] . '|' . $registered['certificate'] . '|' . $this->get_xmpp_fqdn();
+
+        return $hostname_key;
     }
 
     /**
@@ -210,12 +212,12 @@ class Openfire extends Daemon
      * @throws Engine_Exception
      */
 
-    public function get_digital_certificates()
+    public function get_secure_hostname_options()
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $certificate_manager = new Certificate_Manager();
-        $hostnames = $certificate_manager->get_secure_hostnames();
+        $store = new Certificate_Store();
+        $hostnames = $store->get_secure_hostnames();
 
         return $hostnames;
     }
@@ -344,11 +346,11 @@ class Openfire extends Daemon
 
         Validation_Exception::is_valid($this->validate_certificate($certificate));
 
-        // Register certificate with Certificate Manager
+        // Register certificate with Certificate Store
         //----------------------------------------------
 
         $cert_object['-'] = $certificate;
-        $certificate_manager = new Certificate_Manager();
+        $certificate_manager = new Certificate_Store();
         $certificate_manager->register($cert_object, 'openfire', lang('openfire_app_name'));
 
         // Import via keytool
@@ -585,7 +587,7 @@ class Openfire extends Daemon
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $certificate_manager = new Certificate_Manager();
+        $certificate_manager = new Certificate_Store();
         $certificates = $certificate_manager->get_certificates();
 
         if (!array_key_exists($certificate, $certificates))

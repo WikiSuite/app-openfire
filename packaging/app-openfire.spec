@@ -23,7 +23,7 @@ License: LGPLv3
 Group: Applications/API
 Requires: app-base-core
 Requires: app-base >= 1:2.4.15
-Requires: app-certificate-manager-core >= 1:2.4.16
+Requires: app-certificate-manager-core >= 1:2.6.0
 Requires: app-users-core >= 1:2.4.0
 Requires: app-groups-core
 Requires: app-ldap-core
@@ -58,7 +58,7 @@ install -D -m 0755 packaging/openldap-online-event %{buildroot}/var/clearos/even
 logger -p local6.notice -t installer 'app-openfire - installing'
 
 %post core
-logger -p local6.notice -t installer 'app-openfire-core - installing'
+logger -p local6.notice -t installer 'app-openfire-api - installing'
 
 if [ $1 -eq 1 ]; then
     [ -x /usr/clearos/apps/openfire/deploy/install ] && /usr/clearos/apps/openfire/deploy/install
@@ -75,7 +75,7 @@ fi
 
 %preun core
 if [ $1 -eq 0 ]; then
-    logger -p local6.notice -t installer 'app-openfire-core - uninstalling'
+    logger -p local6.notice -t installer 'app-openfire-api - uninstalling'
     [ -x /usr/clearos/apps/openfire/deploy/uninstall ] && /usr/clearos/apps/openfire/deploy/uninstall
 fi
 

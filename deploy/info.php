@@ -52,7 +52,7 @@ $app['requires'] = array(
 
 $app['core_requires'] = array(
     'app-base >= 1:2.4.15',
-    'app-certificate-manager-core >= 1:2.4.16',
+    'app-certificate-manager-core >= 1:2.6.0',
     'app-users-core >= 1:2.4.0',
     'app-groups-core',
     'app-ldap-core',

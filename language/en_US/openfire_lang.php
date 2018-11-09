@@ -19,3 +19,4 @@ $lang['openfire_xmpp_client'] = 'XMPP Client';
 $lang['openfire_xmpp_ssl_client'] = 'XMPP SSL Client';
 $lang['openfire_meetings'] = 'Openfire Meetings';
 $lang['openfire_openfire_incompatible_message'] = 'Sorry, the Openfire app is not compatible with your accounts system.';
+$lang['openfire_secure_hostname'] = 'Secure Hostname';

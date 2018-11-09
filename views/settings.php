@@ -110,10 +110,7 @@ if (empty($possible_admins)) {
     echo form_header(lang('base_settings'));
 
     echo field_multiselect_dropdown('admins[]', $possible_admins, $current_admins, lang('openfire_administrators'), TRUE, $read_only);
-
-    // FIXME: change "Secure Network" language tag - buildsys is down right now
-    echo field_dropdown('hostname', $hostnames, $hostname, 'Secure Hostname', $read_only);
-
+    echo field_dropdown('hostname', $hostnames, $hostname, lang('openfire_secure_hostname'), $read_only);
     echo field_input('domain', $domain, lang('openfire_xmpp_domain'), $xmpp_read_only);
     echo field_button_set($buttons);
 
